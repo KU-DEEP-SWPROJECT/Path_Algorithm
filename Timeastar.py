@@ -10,6 +10,7 @@ class Node:
         self.cost = cost
         self.heuristic = heuristic
         self.dir = dir
+        
     def __lt__(self, other):
         return (self.cost + self.heuristic) < (other.cost + other.heuristic)
     def __eq__(self, other) -> bool:
@@ -57,27 +58,27 @@ class TimeAstar:
         i = 0
         modified_list = []
         command_list = []
-        dir = { (0,0):'S'}
-        dir[(1,0)] = dir[(0,1)] = 'F'
-        
-        while(i < len(vector_list)-1):
-            j = i+1
+        dir = {(0,0) : 'S'}; dir[(0,1)] = dir[(1,0)] = 'F'
+
+        while i < len(vector_list) - 1:
+            j = i + 1
             while j < len(vector_list) and vector_list[i] == vector_list[j]:
                 j += 1
-            R = ''
-            ccw= None
-        
-            if modified_list:
-                ccw = self.CCW(modified_list[-1], vector_list[j-1])
-            if ccw is not None: R = ("R90","R-90","")[ccw]
-            if R: command_list.append(R)
-            
-            if vector_list[i] != (0,0): modified_list.append(vector_list[i]) 
-            command_list.append(dir[vector_list[i]]+str(j-i)) 
+
+            ccw = self.CCW(modified_list[-1], vector_list[j - 1]) if modified_list else None
+            R = ("R90", "R-90", "")[ccw] if ccw is not None else ""
+            if R:
+                command_list.append(R)
+
+            if vector_list[i] != (0, 0):
+                modified_list.append(vector_list[i])
+            command_list.append(dir[vector_list[i]] + str(j - i))
             i = j
 
-        if i < len(vector_list): command_list.append(dir[tuple(vector_list[i])]+"1") 
-        
+        else:
+            if i < len(vector_list):
+                command_list.append(dir[tuple(vector_list[i])] + "1")
+
         return '/'.join(command_list)
 
 
@@ -90,9 +91,7 @@ class TimeAstar:
             List.append((x-T_Node.parent.coordinate[1],y-T_Node.parent.coordinate[0]))
             T_Node = T_Node.parent
         List.reverse()
-        a= self.lightweight(List)
-        if a is not None:
-            self.robots[idx].put_path(a)
+        self.robots[idx].put_path(self.lightweight(List))
         
     
 
