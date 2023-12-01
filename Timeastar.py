@@ -28,7 +28,7 @@ class TimeAstar:
         self.robots = robots.copy()
         self.MAP = [[0]*size for _ in range(size)]
         self.TimeTable = [[[[0,0]  for _ in range(len(robots))] for _ in range(size)] for _ in range(size)]
-        self.Costratio = 10
+        self.COST_RATIO = 10
 
 
 
@@ -123,9 +123,9 @@ class TimeAstar:
         robot = self.robots[idx]
         goal = robot.goal
         Q = [ Node(None, robot.coordinate , 0, self.distance(robot.coordinate , goal), robot.direction)]
-        speed = robot.straight*self.Costratio
-        rotate = robot.rotate*self.Costratio
-        stop = robot.stop*self.Costratio
+        speed = robot.straight*self.COST_RATIO
+        rotate = robot.rotate*self.COST_RATIO
+        stop = robot.stop*self.COST_RATIO
         while Q:
             Top = Pop(Q)
             if(Top.coordinate == goal): #success path find!
@@ -149,6 +149,7 @@ class TimeAstar:
     
 
 n = int(input())
+
 robots = [Robot((1,0),1,1,1,1,(4,4),'G'),Robot((0,0),1,1,1,1,(4,4),'R'),Robot((0,4),0,1,1,1,(4,4),'B')]
 astar = TimeAstar(size=n, robots=robots)
 astar.Robot_sort()
