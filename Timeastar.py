@@ -5,12 +5,12 @@ from math import *
 from robot_class import robot as Robot
 
 class Node:
-    def __init__(self,parent :object, coordinate:tuple, cost, heuristic,dir):
+    def __init__(self,parent :object, coordinate: tuple, cost : int, heuristic : int,dir : int):
         self.PARENT = parent
         self.COORDINATE = coordinate
         self.COST = cost
         self.HEURISTIC = heuristic
-        self.DIRCTION = dir  # 0b00 : front  0b11 : back 0b01 : left 0b10: right
+        self.DIRECTION = dir  # 0b00 : front  0b11 : back 0b01 : left 0b10: right
         
     def __lt__(self, other):
         return (self.COST + self.HEURISTIC) < (other.COST + other.HEURISTIC)
@@ -35,15 +35,15 @@ class TimeAstar:
 
     def set_goal(self,goal:tuple):
         for robot in self.robots:
-            robot.goal = goal
+            robot.GOAL = goal
 
-    def distance(self,A:list , B:list) -> int: # manathn
+    def distance(self,A:list , B:list) -> int: # 맨하튼 거리
         return abs(A[0]-B[0]) + abs(A[1]-B[1])
     
-    def put_robots(self,robots:list):
-        self.robots = robots.copy()
+    def put_robots(self,robotlist:list):
+        self.robots = robotlist.copy()
 
-    def Set_line(self,Ob,p1idx,p2idx):
+    def set_line(self,Ob,p1idx,p2idx):
         p1 = Ob[p1idx]
         p2 = Ob[p2idx]
         if p1[0] >= p2[0] and p1[1] >= p2[1]:
@@ -57,10 +57,10 @@ class TimeAstar:
             pass
     def Set_obstacle(self,obstacles) -> None:
         for obstacle in obstacles:
-            self.Set_line(obstacle,0,1)
-            self.Set_line(obstacle,1,2)
-            self.Set_line(obstacle,2,3)
-            self.Set_line(obstacle,3,0)
+            self.set_line(obstacle,0,1)
+            self.set_line(obstacle,1,2)
+            self.set_line(obstacle,2,3)
+            self.set_line(obstacle,3,0)
             
         
 
@@ -68,8 +68,8 @@ class TimeAstar:
     # A와 B의 외적 계산
         cross_product = np.cross(A, B)
 
-        if cross_product > 0 : return 0
-        elif cross_product < 0 : return 1
+        if 0 < cross_product: return 0
+        elif 0 > cross_product: return 1
         return 2
 
     def ToCommand(self,idx :int):
@@ -109,8 +109,8 @@ class TimeAstar:
     def path_tracking(self,idx:int,T_Node : Node) -> None:
         List = []
         Table = self.TimeTable
-        while(T_Node.PARENT.COORDINATE is not None):
-            y,x = T_Node.COORDINATE
+        while T_Node.PARENT.COORDINATE is not None:
+            x,y = T_Node.COORDINATE
             Table[y][x][idx] = [T_Node.COST - T_Node.PARENT.COST,T_Node.COST]
             print(T_Node.COORDINATE,T_Node.COST)
             List.append((x-T_Node.PARENT.COORDINATE[0],y-T_Node.PARENT.COORDINATE[1]))
@@ -120,7 +120,7 @@ class TimeAstar:
         # self.robots[idx].put_path(self.ToCommand(List))
         
     def Robot_sort(self):
-        self.robots.sort(key=lambda x : self.distance(x.coordinate,x.goal))
+        self.robots.sort(key=lambda x : self.distance(x.coordinate,x.GOAL))
 
     def Search(self,idx:int) -> None: # Robot Path finding 
         # Heuristic = Distance  // F = G(현재까지 온 거리) + H(맨하튼 거리)
@@ -141,16 +141,18 @@ class TimeAstar:
                 y = MOV[1] + Top.COORDINATE[1]
                 x = MOV[0] + Top.COORDINATE[0]
                 if dir == 4:
-                    Push(Q, Node(Top,Top.COORDINATE,Top.COST+STOP,Top.HEURISTIC,Top.DIRCTION))
+                    Push(Q, Node(Top,Top.COORDINATE,Top.COST+STOP,Top.HEURISTIC,Top.DIRECTION))
                 else:
                     if x < 0 or y < 0 or x > self.SIZE-1 or y > self.SIZE-1 or self.MAP[y][x]== -1 or (x,y) in visited: continue
                     st = Top.COST+ROTATE+SPEED
-                    if dir ^ Top.dir in (0,3):
+                    if dir ^ Top.DIRECTION in (0,3):
                         st = Top.COST+SPEED
                     if all(map(lambda r: (st < r[0]  or st > r[1]),self.TimeTable[y][x])):
                         if((x,y) == GOAL): #success path find!
                             self.path_tracking(idx,Node(Top,(x,y),st,self.distance((x,y),GOAL),dir))
-                        Push(Q, Node(Top,(x,y),st,self.distance((x,y),GOAL),dir))
+                            Q.clear()
+                        else:
+                            Push(Q, Node(Top,(x,y),st,self.distance((x,y),GOAL),dir))
                     
     
 
