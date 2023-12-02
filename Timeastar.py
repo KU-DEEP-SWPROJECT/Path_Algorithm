@@ -28,7 +28,7 @@ class Node:
 
 
 class TimeAstar:
-    ## Size, Radius , robots( center coordinate:tuple , direction:int,straight_speed:int,rotate_speed:int, stop:int, color:str) goal: ㄷ자 , Obstacle [ [ㄷ자],[ㄷ자]]
+    ## Size, Radius , robots( center coordinate:tuple , direction:int,straight_speed:int,rotate_speed:int, stop:int, color:str) goal: ㄷ자 , Obstacle [ [ㄷ자],[ㄷ자]] hoho
     def __init__(self, SIZE: int , Radius : int, robots: list, goal : list, obstacles: list) -> None:
         self.SIZE = SIZE
         self.robots = robots.copy()
