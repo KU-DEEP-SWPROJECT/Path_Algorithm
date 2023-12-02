@@ -22,24 +22,26 @@ class Node:
     def __hash__(self) -> int:
         return self.cost+self.heuristic
 
+
 class TimeAstar:
-    def __init__(self,size,robots) -> None:
-        self.size = size
+
+    def __init__(self,SIZE:int,robots:list, goal:tuple) -> None:
+        self.SIZE = SIZE
         self.robots = robots.copy()
-        self.MAP = [[0]*size for _ in range(size)]
-        self.TimeTable = [[[[0,0]  for _ in range(len(robots))] for _ in range(size)] for _ in range(size)]
-        self.COST_RATIO = 10
+        self.MAP = [[0]*SIZE for _ in range(SIZE)]
+        self.TimeTable = [[[[0,0]  for _ in range(len(robots))] for _ in range(SIZE)] for _ in range(SIZE)]
+        self.COST_RATIO = 5
+        self.set_goal(goal)
+    def set_goal(self,goal:tuple):
+        for robot in self.robots:
+            robot.goal = goal
 
-
-
-    def distance(self,A , B) -> int: # manathn
+    def distance(self,A:list , B:list) -> int: # manathn
         return abs(A[0]-B[0]) + abs(A[1]-B[1])
     
-    def put_robots(self,robots):
+    def put_robots(self,robots:list):
         self.robots = robots.copy()
 
-    def put_MAP(self,MAP):
-        self.MAP = MAP.copy()
     def Set_line(self,Ob,p1idx,p2idx):
         p1 = Ob[p1idx]
         p2 = Ob[p2idx]
@@ -59,9 +61,7 @@ class TimeAstar:
             self.Set_line(obstacle,2,3)
             self.Set_line(obstacle,3,0)
             
-            
-
-
+        
 
     def CCW(self,A, B):
     # A와 B의 외적 계산
@@ -73,11 +73,17 @@ class TimeAstar:
         elif cross_product < 0 : return 1
         return 2
 
-    def lightweight(self,vector_list):
+    def lightweight(self,vector_list:list):
         i = 0
         modified_list = []
         command_list = []
-        dir = {(0,0) : 'S'}; dir[(0,1)] = dir[(1,0)] = 'F'
+        dir = { 
+            (0,0) : 'S',
+            (0,1) : 'F', 
+            (1,0) : 'F',
+            (0,-1) : 'B',
+            (-1,0) : 'B',
+            }
 
         while i < len(vector_list) - 1:
             j = i + 1
@@ -100,8 +106,7 @@ class TimeAstar:
 
         return '/'.join(command_list)
 
-
-    def path_tracking(self,idx,T_Node : Node) -> None:
+    def path_tracking(self,idx:int,T_Node : Node) -> None:
         List = []
         Table = self.TimeTable
         while(T_Node.parent is not None):
@@ -117,48 +122,48 @@ class TimeAstar:
     def Robot_sort(self):
         self.robots.sort(key=lambda x : self.distance(x.coordinate,x.goal))
 
-    def Search(self,idx) -> None: # Robot Path finding 
+    def Search(self,idx:int) -> None: # Robot Path finding 
         # Heuristic = Distance  // F = G(현재까지 온 거리) + H(맨하튼 거리)
-        visited = set()
+        
         robot = self.robots[idx]
-        goal = robot.goal
-        Q = [ Node(None, robot.coordinate , 0, self.distance(robot.coordinate , goal), robot.direction)]
-        speed = robot.straight*self.COST_RATIO
-        rotate = robot.rotate*self.COST_RATIO
-        stop = robot.stop*self.COST_RATIO
+        GOAL = robot.GOAL
+        SPEED = robot.straight*self.COST_RATIO
+        ROTATE = robot.rotate*self.COST_RATIO
+        STOP = robot.stop*self.COST_RATIO
+
+        Q = [ Node(None, robot.coordinate , 0, self.distance(robot.coordinate , GOAL), robot.direction)]
+        visited = set()
         while Q:
             Top = Pop(Q)
-            if(Top.coordinate == goal): #success path find!
-                self.path_tracking(idx,Top)
-                break
             visited.add(Top.coordinate)
             
             for dir,ku in enumerate([[0,1],[0,-1],[1,0],[-1,0],[0,0]]):
-                y = ku[0] + Top.coordinate[0]
-                x = ku[1] + Top.coordinate[1]
+                y = ku[1] + Top.coordinate[1]
+                x = ku[0] + Top.coordinate[0]
                 if dir == 4:
-                    Push(Q, Node(Top,Top.coordinate,Top.cost+stop,Top.heuristic,Top.dir) )
+                    Push(Q, Node(Top,Top.coordinate,Top.cost+STOP,Top.heuristic,Top.dir) )
                 else:
-                    if x < 0 or y < 0 or x > n-1 or y > n-1 or self.MAP[y][x]== -1 or (y,x) in visited: continue
-                    st = Top.cost+rotate+speed
+                    if x < 0 or y < 0 or x > self.SIZE-1 or y > self.SIZE-1 or self.MAP[y][x]== -1 or (x,y) in visited: continue
+                    st = Top.cost+ROTATE+SPEED
                     if dir ^ Top.dir in (0,3):
-                        st = Top.cost+speed
+                        st = Top.cost+SPEED
                     if all(map(lambda r: (st < r[0]  or st > r[1]),self.TimeTable[y][x])):
-                        Push(Q, Node(Top,(y,x),st,self.distance((y,x),goal),dir))
+                        if((x,y) == GOAL): #success path find!
+                            self.path_tracking(idx,Node(Top,(x,y),st,self.distance((x,y),GOAL),dir))
+                        Push(Q, Node(Top,(x,y),st,self.distance((x,y),GOAL),dir))
                     
     
 
 n = int(input())
 
-robots = [Robot((1,0),1,1,1,1,(4,4),'G'),Robot((0,0),1,1,1,1,(4,4),'R'),Robot((0,4),0,1,1,1,(4,4),'B')]
-astar = TimeAstar(size=n, robots=robots)
+robots = [Robot((1,0),1,1,2,1,'G'),Robot((0,0),1,1,2,1,'R'),Robot((0,4),0,1,2,1,'B')]
+astar = TimeAstar(n, robots,(4,4))
 astar.Robot_sort()
 astar.MAP[3][2] = astar.MAP[3][3]=astar.MAP[3][1]= astar.MAP[3][4] = -1
-astar.Search(0)
 
-# for i in range(len(astar.robots)):
-#     astar.Search(i)
-#     print(astar.robots[i].path)
+for i in range(len(astar.robots)):
+    astar.Search(i)
+    # print(astar.robots[i].path)
     
 # for i in range(len(robots)):
 #     astar.Search(i)
