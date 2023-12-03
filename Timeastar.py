@@ -3,6 +3,7 @@ from heapq import heappop as Pop
 import numpy as np
 from math import *
 from typing import Optional
+import copy
 from robot_class import robot as Robot
 
 
@@ -36,9 +37,9 @@ class TimeAstar:
         self.MAP = [[0] * SIZE for _ in range(SIZE)]
         self.COST_RATIO = 5
         self.RANGE = Radius * Radius
-        self.AgentTable = [[] for _ in range(len(robots))]
+        self.AgentTable = [[] for _ in range(len(robots))]  # [ [], [], [], [], [] ]
         self.set_goal(tuple(np.mean(goal, axis=0).astype(int)))
-        obstacles.append(goal)
+        # obstacles.append(goal)
         self.set_obstacle(obstacles)
 
     def set_goal(self, goal: tuple):
@@ -91,17 +92,18 @@ class TimeAstar:
         List = []
 
         while T_Node.PARENT is not None:
-            List.append((T_Node.COST, T_Node.COORDINATE))
+            List.append((T_Node.COST//self.COST_RATIO, T_Node.COORDINATE))
             T_Node = T_Node.PARENT
+        List.append((T_Node.COST//self.COST_RATIO,T_Node.COORDINATE))
         List.reverse()
-        List.append(self.robots[idx].GOAL)
+
         j = 0
         for L in List:
             while j <= L[0]:
                 self.AgentTable[idx].append(L[1])
                 j+=1
 
-        # self.robots[idx].put_path(self.ToCommand(List))
+        self.robots[idx].put_path(List)
 
     def Robot_sort(self) -> None:
         self.robots.sort(key=lambda x: self.distance(x.coordinate, x.GOAL))
@@ -110,7 +112,12 @@ class TimeAstar:
         dy = B[1] - A[1]
         dx = B[0] - A[0]
         return (dy * dy + dx * dx) <= self.RANGE
-
+    def draw_path(self,idx):
+        MAP = copy.deepcopy(self.MAP)
+        for i in self.robots[idx].path:
+            x,y = i[1]
+            MAP[y][x] = 'ㅁ'
+        print(np.matrix(MAP))
     def Search(self, idx: int) -> None:  # Robot Path finding
         # Heuristic = Distance  // F = G(현재까지 온 거리) + H(맨하튼 거리)
 
@@ -120,29 +127,30 @@ class TimeAstar:
         ROTATE : int = ROBOT.ROTATE * self.COST_RATIO
         STOP : int = ROBOT.STOP * self.COST_RATIO
         print('GOAL',GOAL)
-        Q = [Node(None, ROBOT.coordinate, 0, self.distance(ROBOT.coordinate, GOAL), ROBOT.direction)]
+        Q = [Node(parent=None, coordinate=ROBOT.coordinate, cost=0, heuristic=self.distance(ROBOT.coordinate, GOAL), dir=ROBOT.direction)]
         visited = set()
         while Q:
-            Top = Pop(Q)
-            print(Top.COORDINATE,Top.COST)
+            Top : Node = Pop(Q)
+            print(Top.COORDINATE,"Cost: ",Top.COST,"Heurisitc: ",Top.HEURISTIC)
             visited.add(Top.COORDINATE)
 
             for dir, MOV in enumerate([[0,1],[1,0],[-1,0],[0,-1],[0, 0]]):
                 x,y = MOV[0] + Top.COORDINATE[0] , MOV[1] + Top.COORDINATE[1]
 
                 if dir == 4:
-                    Push(Q, Node(Top, Top.COORDINATE, Top.COST + STOP, Top.HEURISTIC, Top.DIRECTION))
+                    Push(Q, Node(parent=Top, coordinate=Top.COORDINATE, cost=Top.COST + STOP, heuristic=Top.HEURISTIC, dir=Top.DIRECTION))
                 else:
                     if x < 0 or y < 0 or x > self.SIZE - 1 or y > self.SIZE - 1 or self.MAP[y][x] == -1 or (x, y) in visited: continue
                     st = Top.COST + ROTATE + SPEED
-                    if dir ^ Top.DIRECTION in (0, 3):
+                    if dir ^ Top.DIRECTION in (0, 3): # 같은 방향을 바라보거나 , 뒤로 가는 방향이라면,
                         st -= ROTATE
 
                     fleg= True
 
-                    for i in range(len(self.robots)):
+                    for i in range(len(self.robots)): # 로봇의 개수만큼
                         if len(self.AgentTable[i]) <= st: continue
                         if self.is_Range(self.AgentTable[i][st],(x,y)):
+                            print("fleg false")
                             fleg = False
                     if fleg:
                         Heuristic: int = self.distance((x, y), GOAL)
@@ -164,6 +172,8 @@ astar.Robot_sort()
 for i in range(len(astar.robots)):
     astar.Search(i)
     print(astar.robots[i].path)
+
+
 
 # print(astar.robots[i].path)
 # for y in range(n):

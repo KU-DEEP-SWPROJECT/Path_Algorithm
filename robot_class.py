@@ -17,7 +17,7 @@ class robot:
             self.IDX = 4
 
     def put_path(self,Path)->None:
-        self.path = str(self.IDX)+":"+Path
+        self.path = Path
 
     def put_speed(self,straight_speed,rotate_speed):
         self.STRAIGHT = straight_speed
