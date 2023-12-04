@@ -109,10 +109,7 @@ class TimeAstar:
         for i in self.robots[idx].path:
             x,y = i[1]
             MAP[y][x] = '●'
-        for y in range(100):
-            for x in range(100):
-                print(MAP[y][x],end=' ')
-            print()
+        print(np.matrix(MAP))
     @staticmethod
     def Arrow(a,b)-> str:
         if a in [0,3]:
