@@ -28,6 +28,8 @@ class Node:
         return self.COST + self.HEURISTIC
 
 
+
+
 class TimeAstar:
     # Size, Radius , robots( center coordinate:tuple , direction:int,straight_speed:int,rotate_speed:int, stop:int, color:str)
     # , goal: ㄷ자 , Obstacle [ [ㄷ자],[ㄷ자]]
@@ -46,9 +48,17 @@ class TimeAstar:
         for robot in self.robots:
             robot.GOAL = goal
 
+    def set_obstacle(self, obstacles) -> None:
+        for obstacle in obstacles:
+            self.draw_line(obstacle[0][0], obstacle[0][1], obstacle[1][0], obstacle[1][1])
+            self.draw_line(obstacle[1][0], obstacle[1][1], obstacle[2][0], obstacle[2][1])
+            self.draw_line(obstacle[2][0], obstacle[2][1], obstacle[3][0], obstacle[3][1])
+            self.draw_line(obstacle[3][0], obstacle[3][1], obstacle[0][0], obstacle[0][1])
+
     @staticmethod
     def distance(A: tuple, B: tuple) -> int:  # 맨하튼 거리
         return abs(A[0] - B[0]) + abs(A[1] - B[1])
+
 
     def put_robots(self, robotlist: list):
         self.robots = robotlist.copy()
@@ -70,12 +80,7 @@ class TimeAstar:
                 err += dx
                 y0 += sy
 
-    def set_obstacle(self, obstacles) -> None:
-        for obstacle in obstacles:
-            self.draw_line(obstacle[0][0], obstacle[0][1], obstacle[1][0], obstacle[1][1])
-            self.draw_line(obstacle[1][0], obstacle[1][1], obstacle[2][0], obstacle[2][1])
-            self.draw_line(obstacle[2][0], obstacle[2][1], obstacle[3][0], obstacle[3][1])
-            self.draw_line(obstacle[3][0], obstacle[3][1], obstacle[0][0], obstacle[0][1])
+
     @staticmethod
     def CCW(A, B):
         # A와 B의 외적 계산
@@ -87,10 +92,27 @@ class TimeAstar:
             return 1
         return 2
 
+    def ToCommand(self,idx):
+        command_list = []
+        path_list = []
+        difference_list = []
+        path = self.robots[idx].path
+        for i in range(1, len(path)):
+            difference_list.append((path[i][1][0] - path[i - 1][1][0], path[i][1][1] - path[i - 1][1][1]))
+        np.array(difference_list)
+        cur = difference_list[0]
+        cnt = 1
+        for i in range(1, len(difference_list)):
+            ccw = self.CCW(cur, difference_list[i])
+            if (ccw == 2):
+                cnt += 1
+            else:
+                command_list.append(cur * cnt)
+
+        return '/'.join(command_list)
 
     def path_tracking(self, idx: int, T_Node: Node) -> None:
         List = []
-
         while T_Node.PARENT is not None:
             List.append((T_Node.COST//self.COST_RATIO, T_Node.COORDINATE))
             T_Node = T_Node.PARENT
@@ -131,7 +153,7 @@ class TimeAstar:
         visited = set()
         while Q:
             Top : Node = Pop(Q)
-            print(Top.COORDINATE,"Cost: ",Top.COST,"Heurisitc: ",Top.HEURISTIC)
+            # print(Top.COORDINATE,"Cost: ",Top.COST,"Heurisitc: ",Top.HEURISTIC)
             visited.add(Top.COORDINATE)
 
             for dir, MOV in enumerate([[0,1],[1,0],[-1,0],[0,-1],[0, 0]]):
@@ -171,7 +193,7 @@ astar.Robot_sort()
 
 for i in range(len(astar.robots)):
     astar.Search(i)
-    print(astar.robots[i].path)
+    astar.ToCommand(i)
 
 
 
