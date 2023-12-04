@@ -10,7 +10,7 @@ from robot_class import robot as Robot
 class Node:
     def __init__(self, parent, coordinate: tuple, cost: int, heuristic: int, dir: int):
         self.PARENT : Node = parent
-        self.COORDINATE = coordinate
+        self.COORDINATE = tuple(coordinate)
         self.COST = cost
         self.HEURISTIC = heuristic
         self.DIRECTION = dir  # 0b00 : front  0b11 : back 0b01 : left 0b10: right
@@ -124,6 +124,7 @@ class TimeAstar:
         command_list = []
         path = self.robots[idx].Direction_path
         realpath = self.robots[idx].path
+        print(realpath)
         cnt, stopcnt = 0,0
         cur = path[0] # 첫번째 방향
         cur_path = realpath[0][1] # 첫번째 좌표
@@ -220,17 +221,17 @@ class TimeAstar:
                         else:
                             Push(Q, Node(parent=Top, coordinate=(x, y), cost=st, heuristic=Heuristic, dir=dir))
 
-
-n = int(input())
-obstacles = [ [(2,2),(2,3),(3,3),(3,2)]]
-robots = [ Robot((5, 5), 1, 1, 2, 1, 'G'), Robot((0, 0), 1, 1, 2, 1, 'R'), Robot((0, 4),0, 1, 2, 1, 'B'), Robot((8, 8), 0, 1, 2, 1, 'P')]
-astar = TimeAstar( SIZE=n,Radius=7 ,robots=robots, goal= [(7,7), (7,8),(8,8),(8,7)], obstacles=obstacles)
-astar.Robot_sort()
-# print(np.matrix(astar.MAP))
-for i in range(4):
-    print(astar.robots[i].GOAL)
-    astar.Search(i)
-    print(astar.ToCommand(i))
+if __name__ == "__main__":
+    n = int(input())
+    obstacles = [ [(2,2),(2,3),(3,3),(3,2)]]
+    robots = [ Robot((5, 5), 1, 1, 2, 1, 'G'), Robot((0, 0), 1, 1, 2, 1, 'R'), Robot((0, 4),0, 1, 2, 1, 'B'), Robot((8, 8), 0, 1, 2, 1, 'P')]
+    astar = TimeAstar( SIZE=n,Radius=7 ,robots=robots, goal= [(7,7), (7,8),(8,8),(8,7)], obstacles=obstacles)
+    astar.Robot_sort()
+    # print(np.matrix(astar.MAP))
+    for i in range(4):
+        print(astar.robots[i].GOAL)
+        astar.Search(i)
+        print(astar.ToCommand(i))
 
 
 # print(astar.robots[i].path)
