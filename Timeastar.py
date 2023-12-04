@@ -4,9 +4,6 @@ import numpy as np
 from math import *
 from typing import Optional
 import copy
-
-from PIL.ImageCms import Direction
-
 from robot_class import robot as Robot
 
 
@@ -47,8 +44,11 @@ class TimeAstar:
         obstacles.append(goal)
         self.set_obstacle(obstacles)
         self.Robot_sort()
-        for i in range(4):
-            self.robots[i].GOAL = goal[i]
+        self.robots[0].GOAL = (goal[0][0]-1,goal[0][1]+1)
+        self.robots[1].GOAL = (goal[1][0]+1,goal[1][1]+1)
+        self.robots[2].GOAL = (goal[2][0]+1,goal[2][1]-1)
+        self.robots[3].GOAL = (goal[3][0]-1,goal[3][1]-1)
+
     def set_goal(self, goal: tuple):
         for robot in self.robots:
             robot.GOAL = goal
@@ -155,7 +155,7 @@ class TimeAstar:
 
         if cnt > 1:
             command_list.append('F' + str((-1, 1)[1 if fleg else 0] * (cnt-1)))
-        return '/'.join(command_list)
+        return str(self.robots[idx].IDX)+":"+'/'.join(command_list)
     def path_tracking(self, idx: int, T_Node: Node) -> None:
         List = []
         Direction_List = []
@@ -176,7 +176,6 @@ class TimeAstar:
                 self.AgentTable[idx].append(L[1])
                 j+=1
 
-        self.draw_path(idx)
     def Search(self, idx: int) -> None:  # Robot Path finding
         # Heuristic = Distance  // F = G(현재까지 온 거리) + H(맨하튼 거리)
 
@@ -187,9 +186,10 @@ class TimeAstar:
         STOP : int = ROBOT.STOP * self.COST_RATIO
         Q = [Node(parent=None, coordinate=ROBOT.coordinate, cost=0, heuristic=self.distance(ROBOT.coordinate, GOAL), dir=ROBOT.direction)]
         visited = set()
+        cnt = 0
         while Q:
             Top : Node = Pop(Q)
-            print(Top.COORDINATE,"Cost: ",Top.COST,"Heurisitc: ",Top.HEURISTIC)
+            # print(Top.COORDINATE,"Cost: ",Top.COST,"Heurisitc: ",Top.HEURISTIC)
             visited.add(Top.COORDINATE)
 
             for dir, MOV in enumerate([[0,1],[1,0],[-1,0],[0,-1],[0, 0]]):
@@ -197,6 +197,7 @@ class TimeAstar:
 
                 if dir == 4:
                     Push(Q, Node(parent=Top, coordinate=Top.COORDINATE, cost=Top.COST + STOP, heuristic=Top.HEURISTIC, dir=Top.DIRECTION))
+
                 else:
                     if x < 0 or y < 0 or x > self.SIZE - 1 or y > self.SIZE - 1 or self.MAP[y][x] == -1 or (x, y) in visited: continue
                     st = Top.COST + ROTATE + SPEED
@@ -208,7 +209,6 @@ class TimeAstar:
                     for i in range(len(self.robots)): # 로봇의 개수만큼
                         if len(self.AgentTable[i]) <= st: continue
                         if self.is_Range(self.AgentTable[i][st],(x,y)):
-
                             fleg = False
                     if fleg:
                         Heuristic: int = self.distance((x, y), GOAL)
