@@ -220,7 +220,8 @@ class TimeAstar:
                     fleg= True
 
                     for i in range(len(self.robots)): # 로봇의 개수만큼
-                        if self.is_Range(self.AgentTable[i][min(st, len(self.AgentTable[i])-1)],(x,y)):
+
+                        if len(self.AgentTable[i]) and self.is_Range(self.AgentTable[i][min(st, len(self.AgentTable[i])-1)],(x,y)):
                             fleg = False
                     if fleg:
                         Heuristic: int = self.distance((x, y), GOAL)
