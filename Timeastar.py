@@ -10,7 +10,7 @@ from robot_class import robot as Robot
 class Node:
     def __init__(self, parent, coordinate: tuple, cost: int, heuristic: int, dir: int):
         self.PARENT : Node = parent
-        self.COORDINATE = coordinate
+        self.COORDINATE = tuple(coordinate)
         self.COST = cost
         self.HEURISTIC = heuristic
         self.DIRECTION = dir  # 0b00 : front  0b11 : back 0b01 : left 0b10: right
@@ -28,8 +28,6 @@ class Node:
         return self.COST + self.HEURISTIC
 
 
-
-
 class TimeAstar:
     # Size, Radius , robots( center coordinate:tuple , direction:int,straight_speed:int,rotate_speed:int, stop:int, color:str)
     # , goal: ㄷ자 , Obstacle [ [ㄷ자],[ㄷ자]]
@@ -41,6 +39,7 @@ class TimeAstar:
         self.RANGE = Radius * Radius
         self.AgentTable = [[] for _ in range(len(robots))]  # [ [], [], [], [], [] ]
         self.set_goal(tuple(np.mean(goal, axis=0).astype(int)))
+        self.WaitTable= [[[0 for _ in range(SIZE)] for _ in range(SIZE)] for _ in range(len(robots))]
         obstacles.append(goal)
         self.set_obstacle(obstacles)
         self.Robot_sort()
@@ -110,7 +109,10 @@ class TimeAstar:
         for i in self.robots[idx].path:
             x,y = i[1]
             MAP[y][x] = '●'
-        print(np.matrix(MAP))
+        for y in range(100):
+            for x in range(100):
+                print(MAP[y][x],end=' ')
+            print()
     @staticmethod
     def Arrow(a,b)-> str:
         if a in [0,3]:
@@ -143,11 +145,11 @@ class TimeAstar:
                 if cur == path[i]:
                     pass
                 elif cur ^ path[i] == 3: # 반대 방향
-                    command_list.append('F' + str((1, -1)[0 if fleg else 1] * cnt))
+                    if cnt > 0: command_list.append('F' + str((1, -1)[0 if fleg else 1] * cnt))
                     cnt = 1
                     fleg ^= True
                 else: # cur ^ path[i] == 1 or == 2
-                    command_list.append('F' + str((1, -1)[0 if fleg else 1] * cnt))
+                    if cnt> 0: command_list.append('F' + str((1, -1)[0 if fleg else 1] * cnt))
                     command_list.append(self.Arrow(cur,cur ^ path[i]))
                     cnt = 1
                 cnt+=1
@@ -175,6 +177,7 @@ class TimeAstar:
             while j <= L[0]:
                 self.AgentTable[idx].append(L[1])
                 j+=1
+        # self.draw_path(idx)
 
     def Search(self, idx: int) -> None:  # Robot Path finding
         # Heuristic = Distance  // F = G(현재까지 온 거리) + H(맨하튼 거리)
@@ -196,7 +199,10 @@ class TimeAstar:
                 x,y = MOV[0] + Top.COORDINATE[0] , MOV[1] + Top.COORDINATE[1]
 
                 if dir == 4:
-                    Push(Q, Node(parent=Top, coordinate=Top.COORDINATE, cost=Top.COST + STOP, heuristic=Top.HEURISTIC, dir=Top.DIRECTION))
+
+                    if self.WaitTable[idx][y][x] < 5:
+                        Push(Q, Node(parent=Top, coordinate=Top.COORDINATE, cost=Top.COST + STOP, heuristic=Top.HEURISTIC, dir=Top.DIRECTION))
+                        self.WaitTable[idx][y][x]+=1
 
                 else:
                     if x < 0 or y < 0 or x > self.SIZE - 1 or y > self.SIZE - 1 or self.MAP[y][x] == -1 or (x, y) in visited: continue
@@ -212,7 +218,6 @@ class TimeAstar:
                             fleg = False
                     if fleg:
                         Heuristic: int = self.distance((x, y), GOAL)
-
                         if Heuristic == 0:  # success path find!
                             self.path_tracking(idx, Node(parent=Top,coordinate= (x, y), cost=st, heuristic=Heuristic, dir=dir))
                             Q.clear()
@@ -222,16 +227,21 @@ class TimeAstar:
 
 
 n = int(input())
-obstacles = [ [(2,2),(2,3),(3,3),(3,2)]]
-robots = [ Robot((5, 5), 1, 1, 2, 1, 'G'), Robot((0, 0), 1, 1, 2, 1, 'R'), Robot((0, 4),0, 1, 2, 1, 'B'), Robot((8, 8), 0, 1, 2, 1, 'P')]
-astar = TimeAstar( SIZE=n,Radius=7 ,robots=robots, goal= [(7,7), (7,8),(8,8),(8,7)], obstacles=obstacles)
-astar.Robot_sort()
+obstacles = []
+robots = [ Robot((41, 12), 0, 1, 2, 1, 'G'), Robot((56, 11), 0, 1, 2, 1, 'R'), Robot((26, 12),0, 1, 2, 1, 'B'), Robot((13, 11), 0, 1, 2, 1, 'P')]
+astar = TimeAstar( SIZE=n,Radius=7 ,robots=robots, goal= [(170,170),(180,170),(180,150),(160,150)], obstacles=obstacles)
+# robots = [ Robot((41, 12), 0, 1, 2, 1, 'G'), Robot((56, 11), 0, 1, 2, 1, 'R'), Robot((26, 12),0, 1, 2, 1, 'B'), Robot((13, 11), 0, 1, 2, 1, 'P')]
+# astar = TimeAstar( SIZE=n,Radius=7 ,robots=robots, goal= [(10,77),(29,76),(29,56),(10,57)], obstacles=obstacles)
+# astar.Robot_sort()
 # print(np.matrix(astar.MAP))
+
+
 for i in range(4):
     print(astar.robots[i].GOAL)
     astar.Search(i)
     print(astar.ToCommand(i))
 
+print(astar.AgentTable)
 
 # print(astar.robots[i].path)
 # for y in range(n):
