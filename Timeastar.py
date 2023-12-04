@@ -222,23 +222,23 @@ class TimeAstar:
                         else:
                             Push(Q, Node(parent=Top, coordinate=(x, y), cost=st, heuristic=Heuristic, dir=dir))
 
+if __name__ == "__main__":
+    n = int(input())
+    obstacles = []
+    robots = [ Robot((41, 12), 0, 1, 2, 1, 'G'), Robot((56, 11), 0, 1, 2, 1, 'R'), Robot((26, 12),0, 1, 2, 1, 'B'), Robot((13, 11), 0, 1, 2, 1, 'P')]
+    astar = TimeAstar( SIZE=n,Radius=7 ,robots=robots, goal= [(170,170),(180,170),(180,150),(160,150)], obstacles=obstacles)
 
-n = int(input())
-obstacles = []
-robots = [ Robot((41, 12), 0, 1, 2, 1, 'G'), Robot((56, 11), 0, 1, 2, 1, 'R'), Robot((26, 12),0, 1, 2, 1, 'B'), Robot((13, 11), 0, 1, 2, 1, 'P')]
-astar = TimeAstar( SIZE=n,Radius=7 ,robots=robots, goal= [(170,170),(180,170),(180,150),(160,150)], obstacles=obstacles)
 # robots = [ Robot((41, 12), 0, 1, 2, 1, 'G'), Robot((56, 11), 0, 1, 2, 1, 'R'), Robot((26, 12),0, 1, 2, 1, 'B'), Robot((13, 11), 0, 1, 2, 1, 'P')]
 # astar = TimeAstar( SIZE=n,Radius=7 ,robots=robots, goal= [(10,77),(29,76),(29,56),(10,57)], obstacles=obstacles)
 # astar.Robot_sort()
 # print(np.matrix(astar.MAP))
 
+    for i in range(4):
+        print(astar.robots[i].GOAL)
+        astar.Search(i)
+        print(astar.ToCommand(i))
 
-for i in range(4):
-    print(astar.robots[i].GOAL)
-    astar.Search(i)
-    print(astar.ToCommand(i))
-
-print(astar.AgentTable)
+    print(astar.AgentTable)
 
 # print(astar.robots[i].path)
 # for y in range(n):
