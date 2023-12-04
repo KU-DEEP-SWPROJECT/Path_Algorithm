@@ -5,7 +5,7 @@ from math import *
 from typing import Optional
 import copy
 from robot_class import robot as Robot
-
+import time
 
 class Node:
     def __init__(self, parent, coordinate: tuple, cost: int, heuristic: int, dir: int):
@@ -39,7 +39,7 @@ class TimeAstar:
         self.RANGE = Radius * Radius
         self.AgentTable = [[] for _ in range(len(robots))]  # [ [], [], [], [], [] ]
         self.set_goal(tuple(np.mean(goal, axis=0).astype(int)))
-        self.WaitTable= [[[0 for _ in range(SIZE)] for _ in range(SIZE)] for _ in range(len(robots))]
+        # self.WaitTable= [[[0 for _ in range(SIZE)] for _ in range(SIZE)] for _ in range(len(robots))]
         obstacles.append(goal)
         self.set_obstacle(obstacles)
         self.Robot_sort()
@@ -104,6 +104,11 @@ class TimeAstar:
         dx = B[0] - A[0]
         return (dy * dy + dx * dx) <= self.RANGE
 
+    def is_Wait(self, A: tuple, B: tuple):
+        dy = B[1] - A[1]
+        dx = B[0] - A[0]
+        return (dy * dy + dx * dx) <= self.RANGE+10
+
     def draw_path(self,idx):
         MAP = copy.deepcopy(self.MAP)
         for i in self.robots[idx].path:
@@ -116,7 +121,6 @@ class TimeAstar:
             return ("R90","R-90")[0 if b==1 else 1]
         else:
             return ("R90","R-90")[0 if b==2 else 1]
-
 
 
     def ToCommand(self,idx):
@@ -196,10 +200,16 @@ class TimeAstar:
                 x,y = MOV[0] + Top.COORDINATE[0] , MOV[1] + Top.COORDINATE[1]
 
                 if dir == 4:
-
-                    if self.WaitTable[idx][y][x] < 5:
-                        Push(Q, Node(parent=Top, coordinate=Top.COORDINATE, cost=Top.COST + STOP, heuristic=Top.HEURISTIC, dir=Top.DIRECTION))
-                        self.WaitTable[idx][y][x]+=1
+                    fleg = True
+                    for i in range(len(self.robots)):  # 로봇의 개수만큼
+                        if len(self.AgentTable[i]) <= st: continue
+                        if self.is_Wait(self.AgentTable[i][st], (x, y)):
+                            fleg = False
+                    if not fleg:
+                        Push(Q,Node(parent=Top, coordinate=Top.COORDINATE, cost=Top.COST + STOP, heuristic=Top.HEURISTIC,dir=Top.DIRECTION))
+                    ''' if self.WaitTable[idx][y][x] < 1:
+                       Push(Q, Node(parent=Top, coordinate=Top.COORDINATE, cost=Top.COST + STOP, heuristic=Top.HEURISTIC, dir=Top.DIRECTION))
+                       self.WaitTable[idx][y][x]+=1'''
 
                 else:
                     if x < 0 or y < 0 or x > self.SIZE - 1 or y > self.SIZE - 1 or self.MAP[y][x] == -1 or (x, y) in visited: continue
@@ -232,13 +242,13 @@ if __name__ == "__main__":
 # astar = TimeAstar( SIZE=n,Radius=7 ,robots=robots, goal= [(10,77),(29,76),(29,56),(10,57)], obstacles=obstacles)
 # astar.Robot_sort()
 # print(np.matrix(astar.MAP))
-
+    start=  time.time()
     for i in range(4):
         print(astar.robots[i].GOAL)
         astar.Search(i)
         print(astar.ToCommand(i))
 
-    print(astar.AgentTable)
+    print(time.time()-start)
 
 # print(astar.robots[i].path)
 # for y in range(n):
