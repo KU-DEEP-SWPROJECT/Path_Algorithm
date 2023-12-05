@@ -126,8 +126,9 @@ class TimeAstar:
         else:
             return ("R90,3","R-90,3")[0 if b==2 else 1]
 
-
+    
     def ToCommand(self,idx):
+        tmp_rate = 0.12
         command_list = []
         path = self.robots[idx].Direction_path
         realpath = self.robots[idx].path
@@ -139,7 +140,7 @@ class TimeAstar:
         for i in range(1,len(path)):
             if cur_path== realpath[i][1]:
                 if cnt > 0:
-                    command_list.append('F'+str((CONST,-CONST)[0 if fleg else 1]*cnt*1.2))
+                    command_list.append('F'+str((CONST,-CONST)[0 if fleg else 1]*cnt)+','+str((CONST,-CONST)[0 if fleg else 1]*cnt*tmp_rate))
                     stopcnt = 0
                     cnt = 0
                 stopcnt += 1
@@ -151,18 +152,18 @@ class TimeAstar:
                 if cur == path[i]:
                     pass
                 elif cur ^ path[i] == 3: # 반대 방향
-                    if cnt > 0: command_list.append('F' + str((CONST, -CONST)[0 if fleg else 1] * cnt*1.2))
+                    if cnt > 0: command_list.append('F' + str((CONST, -CONST)[0 if fleg else 1] * cnt)+','+ str((CONST, -CONST)[0 if fleg else 1] * cnt*tmp_rate))
                     cnt = 1
                     fleg ^= True
                 else: # cur ^ path[i] == 1 or == 2
-                    if cnt> 0: command_list.append('F' + str((CONST, -CONST)[0 if fleg else 1] * cnt*1.2))
+                    if cnt> 0: command_list.append('F' + str((CONST, -CONST)[0 if fleg else 1] * cnt)+','+str((CONST, -CONST)[0 if fleg else 1] * cnt*tmp_rate))
                     command_list.append(self.Arrow(cur,cur ^ path[i]))
                     cnt = 1
                 cnt+=1
             cur,cur_path = path[i] , realpath[i][1]
 
         if cnt > 1:
-            command_list.append('F' + str((-CONST, CONST)[1 if fleg else 0] * (cnt-1)*1.2))
+            command_list.append('F' + str((-CONST, CONST)[1 if fleg else 0] * (cnt-1))+','+str((-CONST, CONST)[1 if fleg else 0] * (cnt-1)*tmp_rate))
         return str(self.robots[idx].IDX)+":"+'/'.join(command_list)
     def path_tracking(self, idx: int, T_Node: Node) -> None:
         List = []
