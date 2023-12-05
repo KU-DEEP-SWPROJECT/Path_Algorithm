@@ -84,7 +84,7 @@ class TimeAstar:
                 y0 += sy
 
     def Robot_sort(self):
-        robots.sort(key=lambda x : self.distance(x.coordinate,x.GOAL))
+        self.robots.sort(key=lambda x : self.distance(x.coordinate,x.GOAL))
     def init_Goal(self,List: list) -> None:
         RobotArray = [[] for _ in range(4)]
         check = []
