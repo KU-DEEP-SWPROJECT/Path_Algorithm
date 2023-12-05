@@ -1,3 +1,4 @@
+from _ast import keyword
 from collections import deque
 from heapq import heappush as Push
 from heapq import heappop as Pop
@@ -41,13 +42,17 @@ class TimeAstar:
         self.RANGE = Radius * Radius
         self.AgentTable = [[] for _ in range(len(robots))]  # [ [], [], [], [], [] ]
 
-        xsize = abs(goal[0][0] - goal[1][0])
-        ysize = abs(goal[1][1] - goal[2][1])
+        L = [*map(tuple,goal)]
+        min_x = min(L)[0]
+        max_x = max(L)[0]
+        min_y = min(L, key=lambda x: x[1])[1]
+        max_y = max(L, key=lambda x: x[1])[1]
+        ysize = max_y-min_y+1
+        xsize = max_x-min_x+1
         dx = xsize // 8
         dy = ysize // 8
-        coo = goal[0]
-        coo2 = goal[3]
-        ggoal = [(coo[0]+dx,coo[1]+dy*2),(coo[0]+dx*7,coo[1]+dy*2),(coo2[0]+dx,coo2[1]-dy*2),(coo2[0]+dx*7,coo2[1]-dy*2)]
+
+        ggoal = [(min_x+dx,max_y+dy),(max_x-dx,max_y+dy),(max_x-dx,min_y-dy),(min_x+dx,min_y-dy)]
 
         self.init_Goal(goal)
         # self.WaitTable= [[[0 for _ in range(SIZE)] for _ in range(SIZE)] for _ in range(len(robots))]
@@ -99,7 +104,6 @@ class TimeAstar:
     def Robot_sort(self):
         self.robots.sort(key=lambda x : self.distance(x.coordinate,x.GOAL))
     def init_Goal(self,List: list) -> None:
-        List = List.tolist()
         RobotArray = []
         a = set()
         b = set()
@@ -275,7 +279,7 @@ class TimeAstar:
 
                         Heuristic: int = self.distance((x, y), GOAL)
 
-                        if Heuristic == 0:  # success path find!
+                        if Heuristic == 1:  # success path find!
 
                             self.path_tracking(idx, Node(parent=Top,coordinate= (x, y), cost=st, heuristic=Heuristic, dir=dir))
                             Q.clear()
