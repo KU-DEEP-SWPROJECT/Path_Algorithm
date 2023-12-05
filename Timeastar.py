@@ -46,7 +46,7 @@ class TimeAstar:
         dx = xsize // 4
         dy = ysize // 4
         coo = goal[0]
-        coo2 = goal[4]
+        coo2 = goal[3]
         ggoal = [(coo[0]+dx,coo[1]),(coo[0]+dx*3,coo[1]),(coo2[0]+dx,coo2[1]),(coo2[0]+dx*3,coo2[1])]
 
         self.init_Goal(goal)
