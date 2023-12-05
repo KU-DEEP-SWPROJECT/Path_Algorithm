@@ -43,6 +43,13 @@ class TimeAstar:
         self.AgentTable = [[] for _ in range(len(robots))]  # [ [], [], [], [], [] ]
 
         L = [*map(tuple,goal)]
+
+        '''
+        max(goal[0][0],
+        
+        '''
+
+
         min_x = min(L)[0]
         max_x = max(L)[0]
         min_y = min(L, key=lambda x: x[1])[1]
@@ -53,9 +60,9 @@ class TimeAstar:
         dy = ysize // 8
         # print("MAX",max_x,max_y)
         # print("MIN",min_x,min_y)
-        ggoal = [(min_x+2*dx,max_y+dy),(max_x-2*dx,max_y+dy),(max_x-2*dx,min_y-50),(min_x+2*dx,min_y-50)]
+        ggoal = [(min_x+2*dx,max_y+dy),(max_x-dx,max_y+dy),(max_x-dx,min_y-2*dy),(min_x+2*dx,min_y-2*dy)]
 
-        self.init_Goal(L)
+        self.init_Goal([(min_x,max_y),(max_x,max_y),(max_x,min_y),(min_x,min_y)])
         # self.WaitTable= [[[0 for _ in range(SIZE)] for _ in range(SIZE)] for _ in range(len(robots))]
         self.set_obstacle([ggoal])
         self.set_obstacle(obstacles)
