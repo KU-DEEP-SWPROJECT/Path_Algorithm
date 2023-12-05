@@ -53,11 +53,11 @@ class TimeAstar:
         dy = ysize // 8
         # print("MAX",max_x,max_y)
         # print("MIN",min_x,min_y)
-        ggoal = [(min_x+dx,max_y+2*dy),(max_x-dx,max_y+2*dy),(max_x-dx,min_y-4*dy),(min_x+dx,min_y-4*dy)]
+        ggoal = [(min_x+2*dx,max_y+2*dy),(max_x-dx,max_y+2*dy),(max_x-dx,min_y),(min_x+2*dx,min_y)]
 
-        self.init_Goal(ggoal)
+        self.init_Goal(L)
         # self.WaitTable= [[[0 for _ in range(SIZE)] for _ in range(SIZE)] for _ in range(len(robots))]
-        self.set_obstacle([goal])
+        self.set_obstacle([ggoal])
         self.set_obstacle(obstacles)
         self.Robot_sort()
         for i in range(len(robots)):
@@ -131,7 +131,7 @@ class TimeAstar:
         return (dy * dy + dx * dx) <= self.RANGE+80
 
     def draw_path(self,idx):
-        MAP = copy.deepcopy(self.MAP)
+        MAP = self.MAP
         for i in self.robots[idx].path:
             x,y = i[1]
             MAP[y][x] = '●'
@@ -281,7 +281,7 @@ class TimeAstar:
 
                         Heuristic: int = self.distance((x, y), GOAL)
 
-                        if Heuristic == 1:  # success path find!
+                        if Heuristic == 0:  # success path find!
 
                             self.path_tracking(idx, Node(parent=Top,coordinate= (x, y), cost=st, heuristic=Heuristic, dir=dir))
                             Q.clear()
@@ -293,15 +293,18 @@ if __name__ == "__main__":
     n = 100
     obstacles = []
     robots = [ Robot((33, 12), 0, 1, 2, 1, 'G'), Robot((47, 12), 0, 1, 2, 1, 'R'), Robot((7, 11),0, 1, 2, 1, 'B'), Robot((20, 12), 0, 1, 2, 1, 'P')]
-    astar = TimeAstar( SIZE=n,Radius=7 ,robots=robots, goal= np.array(((13,80),(34,79),(34,59),(13,59))), obstacles=obstacles)
+    astar = TimeAstar( SIZE=n,Radius=8 ,robots=robots, goal= np.array(((13,80),(34,79),(34,59),(13,59))), obstacles=obstacles)
 
 # robots = [ Robot((41, 12), 0, 1, 2, 1, 'G'), Robot((56, 11), 0, 1, 2, 1, 'R'), Robot((26, 12),0, 1, 2, 1, 'B'), Robot((13, 11), 0, 1, 2, 1, 'P')]
 # astar = TimeAstar( SIZE=n,Radius=7 ,robots=robots, goal= [(10,77),(29,76),(29,56),(10,57)], obstacles=obstacles)
 # astar.Robot_sort()
 # print(np.matrix(astar.MAP))
     start=  time.time()
+    for y in range(100):
+        print(astar.MAP[y])
     for i in range(4):
         astar.Search(i)
+        astar.draw_path(i)
         print(astar.ToCommand(i))
 
     print(time.time()-start)
