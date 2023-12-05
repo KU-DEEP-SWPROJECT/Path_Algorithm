@@ -27,8 +27,9 @@ def test_algorithm(
     for i in range(len(robots)):
         astar.Search(i)
         print(i, 'Complete')
-    
     for i in range(len(astar.robots)):
-        for y in range(200):
-            print(astar.MAP[y])
+        print("GOAL : ",astar.robots[i].GOAL)
+    for i in range(len(astar.robots)):
+        astar.draw_path(i)
         print(astar.ToCommand(i))
+    # print(astar.MAP)
