@@ -34,6 +34,7 @@ class TimeAstar:
     def __init__(self, SIZE: int, Radius: int, robots: list, goal: list, obstacles: list) -> None:
         self.SIZE = SIZE
         self.robots : Robot= robots.copy()
+        self.CONST_TRANSFER = 2 / SIZE
         self.MAP = [[0] * SIZE for _ in range(SIZE)]
         self.COST_RATIO = 5
         self.RANGE = Radius * Radius
@@ -92,7 +93,7 @@ class TimeAstar:
         for i in range(len(self.robots)):
             coo = self.robots[i].coordinate
             for j in List:
-                RobotArray.append((self.distance(coo,j),i,j))
+                RobotArray.append((self.distance(coo,j),i,tuple(j)))
         RobotArray.sort(key= lambda x: x[0])
         for dis,x,y in RobotArray:
             if x in a or y in b: continue
@@ -134,10 +135,11 @@ class TimeAstar:
         cur = path[0] # 첫번째 방향
         cur_path = realpath[0][1] # 첫번째 좌표
         fleg = True # 반전 있는지
+        CONST = self.CONST_TRANSFER
         for i in range(1,len(path)):
             if cur_path== realpath[i][1]:
                 if cnt > 0:
-                    command_list.append('F'+str((1,-1)[0 if fleg else 1]*cnt))
+                    command_list.append('F'+str((CONST,-CONST)[0 if fleg else 1]*cnt))
                     stopcnt = 0
                     cnt = 0
                 stopcnt += 1
@@ -149,18 +151,18 @@ class TimeAstar:
                 if cur == path[i]:
                     pass
                 elif cur ^ path[i] == 3: # 반대 방향
-                    if cnt > 0: command_list.append('F' + str((1, -1)[0 if fleg else 1] * cnt))
+                    if cnt > 0: command_list.append('F' + str((CONST, -CONST)[0 if fleg else 1] * cnt))
                     cnt = 1
                     fleg ^= True
                 else: # cur ^ path[i] == 1 or == 2
-                    if cnt> 0: command_list.append('F' + str((1, -1)[0 if fleg else 1] * cnt))
+                    if cnt> 0: command_list.append('F' + str((CONST, -CONST)[0 if fleg else 1] * cnt))
                     command_list.append(self.Arrow(cur,cur ^ path[i]))
                     cnt = 1
                 cnt+=1
             cur,cur_path = path[i] , realpath[i][1]
 
         if cnt > 1:
-            command_list.append('F' + str((-1, 1)[1 if fleg else 0] * (cnt-1)))
+            command_list.append('F' + str((-CONST, CONST)[1 if fleg else 0] * (cnt-1)))
         return str(self.robots[idx].IDX)+":"+'/'.join(command_list)
     def path_tracking(self, idx: int, T_Node: Node) -> None:
         List = []
@@ -240,7 +242,7 @@ if __name__ == "__main__":
     n = 100
     obstacles = []
     robots = [ Robot((33, 12), 0, 1, 2, 1, 'G'), Robot((47, 12), 0, 1, 2, 1, 'R'), Robot((7, 11),0, 1, 2, 1, 'B'), Robot((20, 12), 0, 1, 2, 1, 'P')]
-    astar = TimeAstar( SIZE=n,Radius=7 ,robots=robots, goal= [(13,80),(34,79),(34,59),(13,59)], obstacles=obstacles)
+    astar = TimeAstar( SIZE=n,Radius=7 ,robots=robots, goal= np.array(((13,80),(34,79),(34,59),(13,59))), obstacles=obstacles)
 
 # robots = [ Robot((41, 12), 0, 1, 2, 1, 'G'), Robot((56, 11), 0, 1, 2, 1, 'R'), Robot((26, 12),0, 1, 2, 1, 'B'), Robot((13, 11), 0, 1, 2, 1, 'P')]
 # astar = TimeAstar( SIZE=n,Radius=7 ,robots=robots, goal= [(10,77),(29,76),(29,56),(10,57)], obstacles=obstacles)
