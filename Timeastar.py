@@ -164,9 +164,9 @@ class TimeAstar:
             else:
                 if y + 1 > self.SIZE-1: continue
                 Q.append((0, x, y + 1))
-        if DIR ^ d == 3:
+        if dir ^ d == 3:
             return d,'R180'
-        return d,('R90', 'R-90')[(DIR ^ d == 1) if DIR in [0, 3] else (DIR ^ d == 2)]
+        return d,('R90', 'R-90')[(dir ^ d == 1) if dir in [0, 3] else (dir ^ d == 2)]
 
 
     def ToCommand(self,idx):
