@@ -128,7 +128,7 @@ class TimeAstar:
     def is_Wait(self, A: tuple, B: tuple):
         dy = B[1] - A[1]
         dx = B[0] - A[0]
-        return (dy * dy + dx * dx) <= self.RANGE+10
+        return (dy * dy + dx * dx) <= self.RANGE+80
 
     def draw_path(self,idx):
         MAP = copy.deepcopy(self.MAP)
