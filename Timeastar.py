@@ -82,15 +82,38 @@ class TimeAstar:
 
     def Robot_sort(self,List: list) -> None:
         RobotArray = [[] for _ in range(4)]
-        Check = [0] * 4
+        check = []
         for i in range(4):
             coo = robots[i].coordinate
             for j in List:
                 RobotArray[i].append(self.distance(coo,j))
+
+        # Find minimum values for each row
+        for row in RobotArray:
+            min_value = min(row)
+            row_index = RobotArray.index(row)
+            col_index = row.index(min_value)
+            check.append((row_index, col_index, min_value))
+            # Exclude the chosen minimum value from other rows
+            for r in RobotArray:
+                r[col_index] = float('inf')  # Exclude from future min calculations
+
+        # Find minimum values for each column
+        for col in range(len(RobotArray[0])):
+            column = [row[col] for row in RobotArray]
+            min_value = min(column)
+            row_index = column.index(min_value)
+            check.append((row_index, col, min_value))
+            # Exclude the chosen minimum value from other columns
+            for r in RobotArray:
+                r[col] = float('inf')  # Exclude from future min calculations
+        for i in check:
+            if i[2] == float('inf'): continue
+            robots[i[0]].GOAL = List[i[1]]
         for i in range(4):
-            for j in range(4):
-                max(Max,j,key=lambda x: RobotArray[x][i])
-            Check[i] = Max
+            print(robots[i].GOAL)
+
+
 
     def is_Range(self, A: tuple, B: tuple):
         dy = B[1] - A[1]
@@ -216,7 +239,7 @@ class TimeAstar:
                             fleg = False
                     if fleg:
                         Heuristic: int = self.distance((x, y), GOAL)
-                        if Heuristic == 0:  # success path find!
+                        if Heuristic == 1:  # success path find!
                             self.path_tracking(idx, Node(parent=Top,coordinate= (x, y), cost=st, heuristic=Heuristic, dir=dir))
                             Q.clear()
                             break
