@@ -37,7 +37,7 @@ class TimeAstar:
         self.SIZE = SIZE
         self.robots : Robot= robots.copy()
         self.CONST_TRANSFER = 2 / SIZE
-        self.MAP = [[0] * SIZE for _ in range(SIZE)]
+        self.MAP = [['○'] * SIZE for _ in range(SIZE)]
         self.COST_RATIO = 5
         self.RANGE = Radius * Radius
         self.AgentTable = [[] for _ in range(len(robots))]  # [ [], [], [], [], [] ]
@@ -100,7 +100,7 @@ class TimeAstar:
         err = dx - dy
 
         while x0 != x1 or y0 != y1:
-            self.MAP[y0][x0] = -1
+            self.MAP[y0][x0] = '◎'
             e2 = 2 * err
             if e2 > -dy:
                 err -= dy
@@ -273,7 +273,7 @@ class TimeAstar:
                         Push(Q,Node(parent=Top, coordinate=Top.COORDINATE, cost=Top.COST + STOP, heuristic=Top.HEURISTIC,dir=Top.DIRECTION))
 
                 else:
-                    if x < 0 or y < 0 or x > self.SIZE - 1 or y > self.SIZE - 1 or self.MAP[y][x] == -1 or (x, y) in visited: continue
+                    if x < 0 or y < 0 or x > self.SIZE - 1 or y > self.SIZE - 1 or self.MAP[y][x] == '◎' or (x, y) in visited: continue
                     st = Top.COST + ROTATE + SPEED
                     if dir ^ Top.DIRECTION in (0, 3): # 같은 방향을 바라보거나 , 뒤로 가는 방향이라면,
                         st -= ROTATE
@@ -300,7 +300,7 @@ if __name__ == "__main__":
     n = 100
     obstacles = []
     robots = [ Robot((33, 12), 0, 1, 2, 1, 'G'), Robot((47, 12), 0, 1, 2, 1, 'R'), Robot((7, 11),0, 1, 2, 1, 'B'), Robot((20, 12), 0, 1, 2, 1, 'P')]
-    astar = TimeAstar( SIZE=n,Radius=8 ,robots=robots, goal= np.array(((13,80),(34,79),(34,59),(13,59))), obstacles=obstacles)
+    astar = TimeAstar( SIZE=n,Radius=8 ,robots=robots, goal= np.array(((10,50),(50,50),(50,10),(10,10))), obstacles=obstacles)
 
 # robots = [ Robot((41, 12), 0, 1, 2, 1, 'G'), Robot((56, 11), 0, 1, 2, 1, 'R'), Robot((26, 12),0, 1, 2, 1, 'B'), Robot((13, 11), 0, 1, 2, 1, 'P')]
 # astar = TimeAstar( SIZE=n,Radius=7 ,robots=robots, goal= [(10,77),(29,76),(29,56),(10,57)], obstacles=obstacles)
