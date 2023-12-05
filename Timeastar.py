@@ -47,7 +47,7 @@ class TimeAstar:
         dy = ysize // 8
         coo = goal[0]
         coo2 = goal[3]
-        ggoal = [(coo[0]+dx,coo[1]),(coo[0]+dx*7,coo[1]),(coo2[0]+dx,coo2[1]),(coo2[0]+dx*7,coo2[1])]
+        ggoal = [(coo[0]+dx,coo[1]+dy),(coo[0]+dx*7,coo[1]+dy),(coo2[0]+dx,coo2[1]-dy),(coo2[0]+dx*7,coo2[1]-dy)]
 
         self.init_Goal(goal)
         # self.WaitTable= [[[0 for _ in range(SIZE)] for _ in range(SIZE)] for _ in range(len(robots))]
@@ -275,7 +275,7 @@ class TimeAstar:
 
                         Heuristic: int = self.distance((x, y), GOAL)
 
-                        if Heuristic == 2:  # success path find!
+                        if Heuristic == 0:  # success path find!
 
                             self.path_tracking(idx, Node(parent=Top,coordinate= (x, y), cost=st, heuristic=Heuristic, dir=dir))
                             Q.clear()

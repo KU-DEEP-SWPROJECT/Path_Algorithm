@@ -29,4 +29,6 @@ def test_algorithm(
         print(i, 'Complete')
     
     for i in range(len(astar.robots)):
+        for y in range(200):
+            print(astar.MAP[y])
         print(astar.ToCommand(i))
