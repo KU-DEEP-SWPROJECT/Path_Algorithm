@@ -172,7 +172,7 @@ class TimeAstar:
         if dir ^ d == 3:
             return d,'R180,0'
         elif dir!=d : return d,('R90,0', 'R-90,0')[(dir ^ d == 1) if dir in [0, 3] else (dir ^ d == 2)]
-        return ''
+        return d,''
 
 
     def ToCommand(self,idx):
