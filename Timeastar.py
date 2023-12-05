@@ -53,7 +53,7 @@ class TimeAstar:
         dy = ysize // 4
         # print("MAX",max_x,max_y)
         # print("MIN",min_x,min_y)
-        ggoal = [(min_x+dx,max_y+dy),(max_x-dx,max_y+dy),(max_x-dx,min_y-dy),(min_x+dx,min_y-dy)]
+        ggoal = [(min_x+dx,max_y+dy),(max_x-dx,max_y+dy),(max_x-dx,min_y-dy-dy),(min_x+dx,min_y-dy-dy)]
 
         self.init_Goal(ggoal)
         # self.WaitTable= [[[0 for _ in range(SIZE)] for _ in range(SIZE)] for _ in range(len(robots))]
