@@ -88,7 +88,7 @@ class TimeAstar:
         RobotArray = []
         a = set()
         b = set()
-        for i in range(len(robots)):
+        for i in range(len(self.robots)):
             coo = self.robots[i].coordinate
             for j in List:
                 RobotArray.append((self.distance(coo,j),i,j))
@@ -248,7 +248,7 @@ if __name__ == "__main__":
     start=  time.time()
     for i in range(4):
         astar.Search(i)
-        astar.draw_path(i)
+        print(astar.ToCommand(i))
 
     print(time.time()-start)
 
