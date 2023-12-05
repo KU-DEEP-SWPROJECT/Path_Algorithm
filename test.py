@@ -1,38 +1,9 @@
-from collections import deque
-def explore_cross(start):
-    sx,sy = start
-    Q = deque()
-    Q.append((0,sx,sy+1))
-    Q.append((1, sx - 1, sy))
-    Q.append((2, sx + 1, sy))
-    Q.append((3, sx, sy - 1))
-    while Q:
-        d,x,y = Q.popleft()
-        if input_matrix[y][x] == -1:
-            break
-        if d==1:
-            if x - 1 < 0: continue
-            Q.append((1, x-1, y ))
-        elif d==2:
-            if x + 1 > 4: continue
-            Q.append((2, x+1, y))
-        elif d==3:
-            if y-1 < 0: continue
-            Q.append((3,x,y-1))
-        else:
-            if y+1 > 4: continue
-            Q.append((0,x,y+1))
-    print(d)
+import test_algorithm
+import numpy as np
+from robot_class import robot as Robot
 
-# 테스트용 입력 행렬
-input_matrix = [
-    [0, 0, -1, 0, 0],
-    [0, 0, 0, 0, 0],
-    [0, 0, 1, -1, 0],
-    [0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0]
-]
-
-explore_cross((2,2))
-for i in range(5):
-    print(input_matrix[i])
+robot = np.array( [(41, 12) ,(56, 11), (26, 12), (13, 11)])
+SIZE = 100
+RADIUS = 10
+target = np.array([(10,77),(29,76),(29,56),(10,57)])
+test_algorithm.test_algorithm(SIZE,RADIUS,robot,target)
