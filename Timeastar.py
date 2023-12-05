@@ -49,8 +49,8 @@ class TimeAstar:
         max_y = max(L, key=lambda x: x[1])[1]
         ysize = max_y-min_y+1
         xsize = max_x-min_x+1
-        dx = xsize // 8
-        dy = ysize // 8
+        dx = xsize // 4
+        dy = ysize // 4
         # print("MAX",max_x,max_y)
         # print("MIN",min_x,min_y)
         ggoal = [(min_x+dx,max_y+dy),(max_x-dx,max_y+dy),(max_x-dx,min_y-dy),(min_x+dx,min_y-dy)]
