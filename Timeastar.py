@@ -1,3 +1,4 @@
+from collections import deque
 from heapq import heappush as Push
 from heapq import heappop as Pop
 import numpy as np
@@ -39,6 +40,15 @@ class TimeAstar:
         self.COST_RATIO = 5
         self.RANGE = Radius * Radius
         self.AgentTable = [[] for _ in range(len(robots))]  # [ [], [], [], [], [] ]
+
+        xsize = abs(goal[0][0] - goal[1][0])
+        ysize = abs(goal[1][1] - goal[2][1])
+        dx = xsize // 4
+        dy = ysize // 4
+        coo = goal[0]
+        coo2 = goal[4]
+        ggoal = [(coo[0]+dx,coo[1]),(coo[0]+dx*3,coo[1]),(coo2[0]+dx,coo2[1]),(coo2[0]+dx*3,coo2[1])]
+
         self.init_Goal(goal)
         # self.WaitTable= [[[0 for _ in range(SIZE)] for _ in range(SIZE)] for _ in range(len(robots))]
         self.set_obstacle([goal])
@@ -46,6 +56,9 @@ class TimeAstar:
         self.Robot_sort()
         for i in range(len(robots)):
             self.AgentTable[i].append(self.robots[i].coordinate)
+
+
+
 
     def set_goal(self, goal: tuple):
         for robot in self.robots:
@@ -126,6 +139,35 @@ class TimeAstar:
         else:
             return ("R90","R-90")[0 if b==2 else 1]
 
+    def explore_cross(self , T):
+        sx, sy = T.COORDINATE
+        dir = T.DIRECTION
+        Q = deque()
+        Q.append((0, sx, sy + 1))
+        Q.append((1, sx - 1, sy))
+        Q.append((2, sx + 1, sy))
+        Q.append((3, sx, sy - 1))
+
+        while Q:
+            d, x, y = Q.popleft()
+            if self.MAP[y][x] == -1:
+                break
+            if d == 1:
+                if x - 1 < 0: continue
+                Q.append((1, x - 1, y))
+            elif d == 2:
+                if x + 1 > self.SIZE-1: continue
+                Q.append((2, x + 1, y))
+            elif d == 3:
+                if y - 1 < 0: continue
+                Q.append((3, x, y - 1))
+            else:
+                if y + 1 > self.SIZE-1: continue
+                Q.append((0, x, y + 1))
+        if DIR ^ d == 3:
+            return d,'R180'
+        return d,('R90', 'R-90')[(DIR ^ d == 1) if DIR in [0, 3] else (DIR ^ d == 2)]
+
 
     def ToCommand(self,idx):
         command_list = []
@@ -163,10 +205,13 @@ class TimeAstar:
 
         if cnt > 1:
             command_list.append('F' + str((-CONST, CONST)[1 if fleg else 0] * (cnt-1)))
+        command_list.append(self.robots[idx].last[1])
         return str(self.robots[idx].IDX)+":"+'/'.join(command_list)
     def path_tracking(self, idx: int, T_Node: Node) -> None:
         List = []
         Direction_List = []
+        d,last = self.explore_cross(T_Node)
+        self.robots[idx].last= (d,last)
         while T_Node.PARENT is not None:
             List.append((T_Node.COST//self.COST_RATIO, T_Node.COORDINATE))
             Direction_List.append(T_Node.DIRECTION)
@@ -213,7 +258,6 @@ class TimeAstar:
                     if not fleg:
                         Push(Q,Node(parent=Top, coordinate=Top.COORDINATE, cost=Top.COST + STOP, heuristic=Top.HEURISTIC,dir=Top.DIRECTION))
 
-
                 else:
                     if x < 0 or y < 0 or x > self.SIZE - 1 or y > self.SIZE - 1 or self.MAP[y][x] == -1 or (x, y) in visited: continue
                     st = Top.COST + ROTATE + SPEED
@@ -230,7 +274,7 @@ class TimeAstar:
 
                         Heuristic: int = self.distance((x, y), GOAL)
 
-                        if Heuristic == 1:  # success path find!
+                        if Heuristic == 2:  # success path find!
 
                             self.path_tracking(idx, Node(parent=Top,coordinate= (x, y), cost=st, heuristic=Heuristic, dir=dir))
                             Q.clear()

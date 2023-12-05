@@ -10,7 +10,7 @@ class robot:
         self.ROTATE = rotate_speed
         self.STOP = stop
         self.GOAL = None
-
+        self.last = None
         if color == 'R':
             self.IDX = 1
         elif color == 'G':

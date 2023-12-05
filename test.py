@@ -1,36 +1,38 @@
-def find_unique_min_values(matrix):
-    unique_min_values = []
+from collections import deque
+def explore_cross(start):
+    sx,sy = start
+    Q = deque()
+    Q.append((0,sx,sy+1))
+    Q.append((1, sx - 1, sy))
+    Q.append((2, sx + 1, sy))
+    Q.append((3, sx, sy - 1))
+    while Q:
+        d,x,y = Q.popleft()
+        if input_matrix[y][x] == -1:
+            break
+        if d==1:
+            if x - 1 < 0: continue
+            Q.append((1, x-1, y ))
+        elif d==2:
+            if x + 1 > 4: continue
+            Q.append((2, x+1, y))
+        elif d==3:
+            if y-1 < 0: continue
+            Q.append((3,x,y-1))
+        else:
+            if y+1 > 4: continue
+            Q.append((0,x,y+1))
+    print(d)
 
-    # Find minimum values for each row
-    for row in matrix:
-        min_value = min(row)
-        row_index = matrix.index(row)
-        col_index = row.index(min_value)
-        unique_min_values.append((row_index, col_index, min_value))
-        # Exclude the chosen minimum value from other rows
-        for r in matrix:
-            r[col_index] = float('inf')  # Exclude from future min calculations
-
-    # Find minimum values for each column
-    for col in range(len(matrix[0])):
-        column = [row[col] for row in matrix]
-        min_value = min(column)
-        row_index = column.index(min_value)
-        unique_min_values.append((row_index, col, min_value))
-        # Exclude the chosen minimum value from other columns
-        for r in matrix:
-            r[col] = float('inf')  # Exclude from future min calculations
-
-    return unique_min_values
-
-
-# Example usage with a 4x4 matrix
-RobotArray = [
-    [3, 7, 2, 9],
-    [1, 8, 6, 4],
-    [5, 3, 7, 2],
-    [8, 7, 1, 6]
+# 테스트용 입력 행렬
+input_matrix = [
+    [0, 0, -1, 0, 0],
+    [0, 0, 0, 0, 0],
+    [0, 0, 1, -1, 0],
+    [0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0]
 ]
 
-result = find_unique_min_values(RobotArray)
-print(result)
+explore_cross((2,2))
+for i in range(5):
+    print(input_matrix[i])
