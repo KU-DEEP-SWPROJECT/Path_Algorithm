@@ -43,11 +43,11 @@ class TimeAstar:
 
         xsize = abs(goal[0][0] - goal[1][0])
         ysize = abs(goal[1][1] - goal[2][1])
-        dx = xsize // 4
-        dy = ysize // 4
+        dx = xsize // 8
+        dy = ysize // 8
         coo = goal[0]
         coo2 = goal[3]
-        ggoal = [(coo[0]+dx,coo[1]),(coo[0]+dx*3,coo[1]),(coo2[0]+dx,coo2[1]),(coo2[0]+dx*3,coo2[1])]
+        ggoal = [(coo[0]+dx,coo[1]),(coo[0]+dx*7,coo[1]),(coo2[0]+dx,coo2[1]),(coo2[0]+dx*7,coo2[1])]
 
         self.init_Goal(goal)
         # self.WaitTable= [[[0 for _ in range(SIZE)] for _ in range(SIZE)] for _ in range(len(robots))]
