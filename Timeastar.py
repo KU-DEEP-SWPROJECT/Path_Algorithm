@@ -40,7 +40,7 @@ class TimeAstar:
         self.AgentTable = [[] for _ in range(len(robots))]  # [ [], [], [], [], [] ]
         self.init_Goal(goal)
         # self.WaitTable= [[[0 for _ in range(SIZE)] for _ in range(SIZE)] for _ in range(len(robots))]
-        obstacles.append(goal)
+        self.set_obstacle([goal])
         self.set_obstacle(obstacles)
         for i in range(len(robots)):
             self.AgentTable[i].append(self.robots[i].coordinate)
@@ -86,35 +86,19 @@ class TimeAstar:
     def Robot_sort(self):
         self.robots.sort(key=lambda x : self.distance(x.coordinate,x.GOAL))
     def init_Goal(self,List: list) -> None:
-        RobotArray = [[] for _ in range(4)]
-        check = []
-        for i in range(4):
+        RobotArray = []
+        a = set()
+        b = set()
+        for i in range(len(robots)):
             coo = self.robots[i].coordinate
             for j in List:
-                RobotArray[i].append(self.distance(coo,j))
-
-        # Find minimum values for each row
-        for row in RobotArray:
-            min_value = min(row)
-            row_index = RobotArray.index(row)
-            col_index = row.index(min_value)
-            check.append((row_index, col_index, min_value))
-            # Exclude the chosen minimum value from other rows
-            for r in RobotArray:
-                r[col_index] = float('inf')  # Exclude from future min calculations
-
-        # Find minimum values for each column
-        for col in range(len(RobotArray[0])):
-            column = [row[col] for row in RobotArray]
-            min_value = min(column)
-            row_index = column.index(min_value)
-            check.append((row_index, col, min_value))
-            # Exclude the chosen minimum value from other columns
-            for r in RobotArray:
-                r[col] = float('inf')  # Exclude from future min calculations
-        for i in check:
-            if i[2] == float('inf'): continue
-            self.robots[i[0]].GOAL = List[i[1]]
+                RobotArray.append((self.distance(coo,j),i,j))
+        RobotArray.sort(key= lambda x: x[0])
+        for dis,x,y in RobotArray:
+            if x in a or y in b: continue
+            a.add(x)
+            b.add(y)
+            self.robots[x].GOAL = y
 
 
     def is_Range(self, A: tuple, B: tuple):
@@ -249,21 +233,18 @@ class TimeAstar:
                             Push(Q, Node(parent=Top, coordinate=(x, y), cost=st, heuristic=Heuristic, dir=dir))
 
 if __name__ == "__main__":
-    n = int(input())
+    n = 100
     obstacles = []
-    robots = [ Robot((41, 12), 0, 1, 2, 1, 'G'), Robot((56, 11), 0, 1, 2, 1, 'R'), Robot((26, 12),0, 1, 2, 1, 'B'), Robot((13, 11), 0, 1, 2, 1, 'P')]
-    astar = TimeAstar( SIZE=n,Radius=7 ,robots=robots, goal= [(170,170),(180,170),(180,150),(160,150)], obstacles=obstacles)
+    robots = [ Robot((33, 12), 0, 1, 2, 1, 'G'), Robot((47, 12), 0, 1, 2, 1, 'R'), Robot((7, 11),0, 1, 2, 1, 'B'), Robot((20, 12), 0, 1, 2, 1, 'P')]
+    astar = TimeAstar( SIZE=n,Radius=7 ,robots=robots, goal= [(13,80),(34,79),(34,59),(13,59)], obstacles=obstacles)
 
 # robots = [ Robot((41, 12), 0, 1, 2, 1, 'G'), Robot((56, 11), 0, 1, 2, 1, 'R'), Robot((26, 12),0, 1, 2, 1, 'B'), Robot((13, 11), 0, 1, 2, 1, 'P')]
 # astar = TimeAstar( SIZE=n,Radius=7 ,robots=robots, goal= [(10,77),(29,76),(29,56),(10,57)], obstacles=obstacles)
 # astar.Robot_sort()
 # print(np.matrix(astar.MAP))
     start=  time.time()
-    for i in range(4):
-        print(astar.robots[i].GOAL)
-        astar.Search(i)
-        print(astar.robots[i].path)
-        print(astar.ToCommand(i))
+    astar.Search(1)
+    # astar.draw_path(1)
 
     print(time.time()-start)
 
