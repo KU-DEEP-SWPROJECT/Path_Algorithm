@@ -38,15 +38,10 @@ class TimeAstar:
         self.COST_RATIO = 5
         self.RANGE = Radius * Radius
         self.AgentTable = [[] for _ in range(len(robots))]  # [ [], [], [], [], [] ]
-        self.set_goal(tuple(np.mean(goal, axis=0).astype(int)))
+        self.Robot_sort(goal)
         # self.WaitTable= [[[0 for _ in range(SIZE)] for _ in range(SIZE)] for _ in range(len(robots))]
         obstacles.append(goal)
         self.set_obstacle(obstacles)
-        self.Robot_sort()
-        self.robots[0].GOAL = (goal[0][0]-1,goal[0][1]+1)
-        self.robots[1].GOAL = (goal[1][0]+1,goal[1][1]+1)
-        self.robots[2].GOAL = (goal[2][0]+1,goal[2][1]-1)
-        self.robots[3].GOAL = (goal[3][0]-1,goal[3][1]-1)
 
     def set_goal(self, goal: tuple):
         for robot in self.robots:
@@ -85,19 +80,17 @@ class TimeAstar:
                 y0 += sy
 
 
-    @staticmethod
-    def CCW(A, B):
-        # A와 B의 외적 계산
-        cross_product = np.cross(A, B)
-
-        if 0 < cross_product:
-            return 0
-        elif 0 > cross_product:
-            return 1
-        return 2
-
-    def Robot_sort(self) -> None:
-        self.robots.sort(key=lambda x: self.distance(x.coordinate, x.GOAL))
+    def Robot_sort(self,List: list) -> None:
+        RobotArray = [[] for _ in range(4)]
+        Check = [0] * 4
+        for i in range(4):
+            coo = robots[i].coordinate
+            for j in List:
+                RobotArray[i].append(self.distance(coo,j))
+        for i in range(4):
+            for j in range(4):
+                max(Max,j,key=lambda x: RobotArray[x][i])
+            Check[i] = Max
 
     def is_Range(self, A: tuple, B: tuple):
         dy = B[1] - A[1]
@@ -207,9 +200,7 @@ class TimeAstar:
                             fleg = False
                     if not fleg:
                         Push(Q,Node(parent=Top, coordinate=Top.COORDINATE, cost=Top.COST + STOP, heuristic=Top.HEURISTIC,dir=Top.DIRECTION))
-                    ''' if self.WaitTable[idx][y][x] < 1:
-                       Push(Q, Node(parent=Top, coordinate=Top.COORDINATE, cost=Top.COST + STOP, heuristic=Top.HEURISTIC, dir=Top.DIRECTION))
-                       self.WaitTable[idx][y][x]+=1'''
+
 
                 else:
                     if x < 0 or y < 0 or x > self.SIZE - 1 or y > self.SIZE - 1 or self.MAP[y][x] == -1 or (x, y) in visited: continue
