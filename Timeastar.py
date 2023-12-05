@@ -42,6 +42,9 @@ class TimeAstar:
         # self.WaitTable= [[[0 for _ in range(SIZE)] for _ in range(SIZE)] for _ in range(len(robots))]
         obstacles.append(goal)
         self.set_obstacle(obstacles)
+        for i in range(len(robots)):
+            self.AgentTable[i].append(self.robots[i].coordinate)
+        print(self.AgentTable)
 
     def set_goal(self, goal: tuple):
         for robot in self.robots:
@@ -84,7 +87,7 @@ class TimeAstar:
         RobotArray = [[] for _ in range(4)]
         check = []
         for i in range(4):
-            coo = robots[i].coordinate
+            coo = self.robots[i].coordinate
             for j in List:
                 RobotArray[i].append(self.distance(coo,j))
 
@@ -109,10 +112,7 @@ class TimeAstar:
                 r[col] = float('inf')  # Exclude from future min calculations
         for i in check:
             if i[2] == float('inf'): continue
-            robots[i[0]].GOAL = List[i[1]]
-        for i in range(4):
-            print(robots[i].GOAL)
-
+            self.robots[i[0]].GOAL = List[i[1]]
 
 
     def is_Range(self, A: tuple, B: tuple):
@@ -189,7 +189,7 @@ class TimeAstar:
         self.robots[idx].put_path(List)
         self.robots[idx].put_direction_path(Direction_List)
 
-        j = 0
+        j = 1
         for L in List:
             while j <= L[0]:
                 self.AgentTable[idx].append(L[1])
@@ -234,7 +234,7 @@ class TimeAstar:
                     fleg= True
 
                     for i in range(len(self.robots)): # 로봇의 개수만큼
-
+                        if i==idx: continue
                         if len(self.AgentTable[i]) and self.is_Range(self.AgentTable[i][min(st, len(self.AgentTable[i])-1)],(x,y)):
                             fleg = False
                     if fleg:
@@ -260,6 +260,7 @@ if __name__ == "__main__":
     for i in range(4):
         print(astar.robots[i].GOAL)
         astar.Search(i)
+        print(astar.robots[i].path)
         print(astar.ToCommand(i))
 
     print(time.time()-start)
