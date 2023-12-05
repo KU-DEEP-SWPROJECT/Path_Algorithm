@@ -38,13 +38,14 @@ class TimeAstar:
         self.COST_RATIO = 5
         self.RANGE = Radius * Radius
         self.AgentTable = [[] for _ in range(len(robots))]  # [ [], [], [], [], [] ]
-        self.Robot_sort(goal)
+        self.init_Goal(goal)
         # self.WaitTable= [[[0 for _ in range(SIZE)] for _ in range(SIZE)] for _ in range(len(robots))]
         obstacles.append(goal)
         self.set_obstacle(obstacles)
         for i in range(len(robots)):
             self.AgentTable[i].append(self.robots[i].coordinate)
         print(self.AgentTable)
+        self.Robot_sort()
 
     def set_goal(self, goal: tuple):
         for robot in self.robots:
@@ -82,8 +83,9 @@ class TimeAstar:
                 err += dx
                 y0 += sy
 
-
-    def Robot_sort(self,List: list) -> None:
+    def Robot_sort(self):
+        robots.sort(key=lambda x : self.distance(x.coordinate,x.GOAL))
+    def init_Goal(self,List: list) -> None:
         RobotArray = [[] for _ in range(4)]
         check = []
         for i in range(4):
