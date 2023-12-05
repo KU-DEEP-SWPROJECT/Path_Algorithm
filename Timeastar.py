@@ -42,10 +42,9 @@ class TimeAstar:
         # self.WaitTable= [[[0 for _ in range(SIZE)] for _ in range(SIZE)] for _ in range(len(robots))]
         self.set_obstacle([goal])
         self.set_obstacle(obstacles)
+        self.Robot_sort()
         for i in range(len(robots)):
             self.AgentTable[i].append(self.robots[i].coordinate)
-        print(self.AgentTable)
-        self.Robot_sort()
 
     def set_goal(self, goal: tuple):
         for robot in self.robots:
@@ -116,7 +115,8 @@ class TimeAstar:
         for i in self.robots[idx].path:
             x,y = i[1]
             MAP[y][x] = '●'
-        print(np.matrix(MAP))
+        for y in range(100):
+            print(MAP[y])
     @staticmethod
     def Arrow(a,b)-> str:
         if a in [0,3]:
@@ -221,11 +221,14 @@ class TimeAstar:
 
                     for i in range(len(self.robots)): # 로봇의 개수만큼
                         if i==idx: continue
-                        if len(self.AgentTable[i]) and self.is_Range(self.AgentTable[i][min(st, len(self.AgentTable[i])-1)],(x,y)):
+                        if self.is_Range(self.AgentTable[i][min(st, len(self.AgentTable[i])-1)],(x,y)):
                             fleg = False
                     if fleg:
+
                         Heuristic: int = self.distance((x, y), GOAL)
+
                         if Heuristic == 1:  # success path find!
+
                             self.path_tracking(idx, Node(parent=Top,coordinate= (x, y), cost=st, heuristic=Heuristic, dir=dir))
                             Q.clear()
                             break
@@ -243,8 +246,9 @@ if __name__ == "__main__":
 # astar.Robot_sort()
 # print(np.matrix(astar.MAP))
     start=  time.time()
-    astar.Search(1)
-    # astar.draw_path(1)
+    for i in range(4):
+        astar.Search(i)
+        astar.draw_path(i)
 
     print(time.time()-start)
 
