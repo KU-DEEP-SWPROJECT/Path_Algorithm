@@ -47,7 +47,7 @@ class TimeAstar:
         dy = ysize // 8
         coo = goal[0]
         coo2 = goal[3]
-        ggoal = [(coo[0]+dx,coo[1]+dy),(coo[0]+dx*7,coo[1]+dy),(coo2[0]+dx,coo2[1]-dy),(coo2[0]+dx*7,coo2[1]-dy)]
+        ggoal = [(coo[0]+dx,coo[1]+dy*2),(coo[0]+dx*7,coo[1]+dy*2),(coo2[0]+dx,coo2[1]-dy*2),(coo2[0]+dx*7,coo2[1]-dy*2)]
 
         self.init_Goal(goal)
         # self.WaitTable= [[[0 for _ in range(SIZE)] for _ in range(SIZE)] for _ in range(len(robots))]
@@ -165,7 +165,7 @@ class TimeAstar:
                 if y + 1 > self.SIZE-1: continue
                 Q.append((0, x, y + 1))
         if dir ^ d == 3:
-            return d,'R180'
+            return d,'R180,0'
         return d,('R90,0', 'R-90,0')[(dir ^ d == 2) if dir in [0, 3] else (dir ^ d == 1)]
 
 
