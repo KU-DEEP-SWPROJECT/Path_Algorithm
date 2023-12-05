@@ -171,7 +171,8 @@ class TimeAstar:
                 Q.append((0, x, y + 1))
         if dir ^ d == 3:
             return d,'R180,0'
-        return d,('R90,0', 'R-90,0')[(dir ^ d == 1) if dir in [0, 3] else (dir ^ d == 2)]
+        elif dir!=d : return d,('R90,0', 'R-90,0')[(dir ^ d == 1) if dir in [0, 3] else (dir ^ d == 2)]
+        return ''
 
 
     def ToCommand(self,idx):
