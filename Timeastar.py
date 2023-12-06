@@ -41,15 +41,21 @@ class TimeAstar:
         self.RANGE = Radius * Radius
         self.AgentTable = [[] for _ in range(len(robots))]  # [ [], [], [], [], [] ]
         L = [*map(tuple,goal)]
-        xsize = max(L)[0] - min(L)[0] + 1
-        ysize = max(L,key=lambda x : x[1])[1] - min(L,key= lambda x : x[1])[1]
+        x_max = max(L)[0]
+        y_max = max(L,key=lambda x : x[1])[1]
+        x_min = min(L)[0]
+        y_min = min(L, key=lambda x: x[1])[1]
+
+        xsize = x_max - x_min + 1
+        ysize = y_max - y_min + 1
         dx = xsize // 8
         dy = ysize // 8
 
-        ggoal = [(goal[0][0]+dx,goal[0][1]+2*dy),(goal[1][0]-dx,goal[1][1]+2*dy),(goal[2][0]-dx,goal[2][0]-3*dy),(goal[3][0]+dx,goal[3][1]-3*dy)]
+        goal = [(x_min, y_max), (x_max, y_max), (x_max,y_min),(x_min,y_min)]
+        ggoal = [(x_min+dx, y_max+2*dy), (x_max-dx, y_max+2*dy), (x_max-dx,y_min+2*dy),(x_min+dx,y_min-2*dy)]
 
         self.init_Goal(ggoal)
-        self.set_obstacle([L])
+        self.set_obstacle([goal])
         self.set_obstacle(obstacles)
         self.Robot_sort()
         for i in range(len(robots)):
@@ -122,7 +128,7 @@ class TimeAstar:
     def is_Wait(self, A: tuple, B: tuple):
         dy = B[1] - A[1]
         dx = B[0] - A[0]
-        return (dy * dy + dx * dx) <= self.RANGE+80
+        return (dy * dy + dx * dx) <= self.RANGE+1000
 
     def draw_path(self,idx):
         MAP = self.MAP
