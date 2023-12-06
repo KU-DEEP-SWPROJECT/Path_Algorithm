@@ -59,9 +59,8 @@ class TimeAstar:
         self.set_obstacle(obstacles)
         self.Robot_sort()
         for i in range(len(robots)):
+            print("GOAL: ",self.robots[i].IDX," -> ",self.robots[i].GOAL)
             self.AgentTable[i].append(self.robots[i].coordinate)
-
-
 
     def set_goal(self, goal: tuple):
         for robot in self.robots:
