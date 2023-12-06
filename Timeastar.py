@@ -51,8 +51,8 @@ class TimeAstar:
         dx = xsize // 8
         dy = ysize // 8
 
-
-        ggoal = [(x_min+dx, y_max+2*dy), (x_max-dx, y_max+2*dy), (x_max-dx,y_min-3*dy),(x_min+dx,y_min-3*dy)]
+        self.set_obstacle([L])
+        ggoal = [(x_min+dx, y_max+3*dy), (x_max-dx, y_max+3*dy), (x_max-dx,y_min-3*dy),(x_min+dx,y_min-3*dy)]
         goal = [(ggoal[0][0]+1,ggoal[0][1]-1),(ggoal[1][0]-1,ggoal[1][1]-1),(ggoal[2][0]-1,ggoal[2][1]+1),(ggoal[3][0]+1,ggoal[3][1]-1)]
         self.init_Goal(ggoal)
         self.set_obstacle([goal])

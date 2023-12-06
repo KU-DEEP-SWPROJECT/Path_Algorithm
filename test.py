@@ -15,3 +15,4 @@ RADIUS = 10
 robot = np.array(L)
 target = np.array(R)
 test_algorithm.test_algorithm(SIZE,RADIUS,robot,target)
+
