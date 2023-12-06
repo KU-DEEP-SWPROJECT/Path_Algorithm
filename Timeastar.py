@@ -264,7 +264,7 @@ class TimeAstar:
                         Push(Q,Node(parent=Top, coordinate=Top.COORDINATE, cost=Top.COST + STOP, heuristic=Top.HEURISTIC,dir=Top.DIRECTION))
 
                 else:
-                    if x < 0 or y < 0 or x > self.SIZE - 1 or y > self.SIZE - 1 or self.MAP[y][x] == -1 or (x, y) in visited: continue
+                    if x < 0 or y < 0 or x > self.SIZE - 1 or y > self.SIZE - 1 or self.MAP[y][x] == '□' or (x, y) in visited: continue
                     st = Top.COST + ROTATE + SPEED
                     if dir ^ Top.DIRECTION in (0, 3): # 같은 방향을 바라보거나 , 뒤로 가는 방향이라면,
                         st -= ROTATE
