@@ -52,7 +52,7 @@ class TimeAstar:
         dx = xsize//8
         dy = ysize//8
 
-        ggoal = [(min_x + dx, max_y + 3 * dy), (max_x - dx, max_y + 3 * dy), (max_x - dx, min_y - 3 * dy), (min_x + dx, min_y - 3 * dy)]
+        ggoal = [(min_x + dx, max_y + 3 * dy), (max_x - dx, max_y + 3 * dy), (max_x - dx, min_y - 6 * dy), (min_x + dx, min_y - 6 * dy)]
         goal = [(L[0][0], ggoal[0][1] - 1), (L[1][0], ggoal[1][1] - 1), (L[2][0], ggoal[2][1] + 1), (L[3][0], ggoal[3][1] - 1)]
         self.init_Goal(ggoal)
         self.set_obstacle([goal])
@@ -68,13 +68,22 @@ class TimeAstar:
     def set_goal(self, goal: tuple):
         for robot in self.robots:
             robot.GOAL = goal
+    def draw_line2(self,x0,y0,x1,y1):
+        if x1 < x0: x0,x1 = x1,x0
+        if y1 < y0: y0,y1 = y1,y0
 
+        if x0==x1:
+            for y in range(y0,y1+1):
+                self.MAP[y][x0] = -1
+        elif y0==y1:
+            for x in range(x0, x1 + 1):
+                self.MAP[y0][x] = -1
     def set_obstacle(self, obstacles) -> None:
         for obstacle in obstacles:
-            self.draw_line(obstacle[0][0], obstacle[0][1], obstacle[1][0], obstacle[1][1])
-            self.draw_line(obstacle[1][0], obstacle[1][1], obstacle[2][0], obstacle[2][1])
-            self.draw_line(obstacle[2][0], obstacle[2][1], obstacle[3][0], obstacle[3][1])
-            self.draw_line(obstacle[3][0], obstacle[3][1], obstacle[0][0], obstacle[0][1])
+            self.draw_line2(obstacle[0][0], obstacle[0][1], obstacle[1][0], obstacle[1][1])
+            self.draw_line2(obstacle[1][0], obstacle[1][1], obstacle[2][0], obstacle[2][1])
+            self.draw_line2(obstacle[2][0], obstacle[2][1], obstacle[3][0], obstacle[3][1])
+            self.draw_line2(obstacle[3][0], obstacle[3][1], obstacle[0][0], obstacle[0][1])
 
     @staticmethod
     def distance(A: tuple, B: tuple) -> int:  # 맨하튼 거리
@@ -149,8 +158,6 @@ class TimeAstar:
         dir = T.DIRECTION
         Q = deque()
         Q.append((0, sx, sy + 1))
-        Q.append((1, sx - 1, sy))
-        Q.append((2, sx + 1, sy))
         Q.append((3, sx, sy - 1))
 
         while Q:
@@ -289,10 +296,42 @@ class TimeAstar:
                             Push(Q, Node(parent=Top, coordinate=(x, y), cost=st, heuristic=Heuristic, dir=dir))
 
 if __name__ == "__main__":
+    import matplotlib.pyplot as plt
     n = 100
     obstacles = []
     robots = [ Robot((33, 12), 0, 1, 2, 1, 'G'), Robot((47, 12), 0, 1, 2, 1, 'R'), Robot((7, 11),0, 1, 2, 1, 'B'), Robot((20, 12), 0, 1, 2, 1, 'P')]
     astar = TimeAstar( SIZE=n,Radius=7 ,robots=robots, goal= np.array(((13,80),(34,79),(34,59),(13,59))), obstacles=obstacles)
+
+    ob = []
+    for y in range(self.SIZE):
+        for x in range(self.SIZE):
+            if self.MAP[y][x] == -1:
+                ob.append((x,y))
+    robot1,robot2,robot3,robot4 = [],[],[],[]
+    if astar.robots[0].path is not None: robot1 = [t for _,t in astar.robots[0].path]
+    if astar.robots[1].path is not None: robot2 = [t for _,t in astar.robots[1].path]
+    if astar.robots[2].path is not None: robot3 = [t for _,t in astar.robots[2].path]
+    if astar.robots[3].path is not None: robot4 = [t for _,t in astar.robots[3].path]
+    x = [x for x,y in ob]
+    y = [y for x,y in ob]
+    plt.scatter(x,y,c='gray',edgecolors='none',s=3)
+    if len(robot1):
+        x = [x for x,y in robot1]
+        y = [y for x,y in robot1]
+        plt.scatter(x,y,c='blue',edgecolors='none',s=3)
+    if len(robot2):
+        x = [x for x, y in robot2]
+        y = [y for x, y in robot2]
+        plt.scatter(x,y,c='purple',edgecolors='none',s=3)
+    if len(robot3):
+        x = [x for x, y in robot3]
+        y = [y for x, y in robot3]
+        plt.scatter(x,y,c='orange',edgecolors='none',s=3)
+    if len(robot4):
+        x = [x for x, y in robot4]
+        y = [y for x, y in robot4]
+        plt.scatter(x,y,c='red',edgecolors='none',s=3)
+    plt.show()
 
 # robots = [ Robot((41, 12), 0, 1, 2, 1, 'G'), Robot((56, 11), 0, 1, 2, 1, 'R'), Robot((26, 12),0, 1, 2, 1, 'B'), Robot((13, 11), 0, 1, 2, 1, 'P')]
 # astar = TimeAstar( SIZE=n,Radius=7 ,robots=robots, goal= [(10,77),(29,76),(29,56),(10,57)], obstacles=obstacles)

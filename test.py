@@ -11,3 +11,5 @@ for i in range(4):
     R.append((x,y))
 
 t.test_algorithm(200,15,np.array(L),np.array(R))
+
+
