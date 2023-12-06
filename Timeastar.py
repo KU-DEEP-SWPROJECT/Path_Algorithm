@@ -36,7 +36,7 @@ class TimeAstar:
         self.SIZE = SIZE
         self.robots : Robot= robots.copy()
         self.CONST_TRANSFER = 2 / SIZE
-        self.MAP = [[0] * SIZE for _ in range(SIZE)]
+        self.MAP = [['■'] * SIZE for _ in range(SIZE)]
         self.COST_RATIO = 5
         self.RANGE = Radius * Radius
         self.AgentTable = [[] for _ in range(len(robots))]  # [ [], [], [], [], [] ]
@@ -90,7 +90,7 @@ class TimeAstar:
         err = dx - dy
 
         while x0 != x1 or y0 != y1:
-            self.MAP[y0][x0] = -1
+            self.MAP[y0][x0] = '□'
             e2 = 2 * err
             if e2 > -dy:
                 err -= dy

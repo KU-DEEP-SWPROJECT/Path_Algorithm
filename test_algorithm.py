@@ -24,11 +24,23 @@ def test_algorithm(
         ))
     
     astar = TimeAstar(SIZE=board_size, Radius=bot_radius, robots=robots, goal=bot_target_point, obstacles=[])
-    for i in range(len(robots)):
-        astar.Search(i)
-        print(i, 'Complete')
-    for i in range(len(astar.robots)):
-        print("GOAL : ",astar.robots[i].GOAL,"START: ",astar.robots[i].coordinate)
-    for i in range(len(astar.robots)):
-        print(astar.ToCommand(i))
+    # for i in range(len(robots)):
+    #     astar.Search(i)
+    #     print(i, 'Complete')
+    # for i in range(len(astar.robots)):
+    #     print("GOAL : ",astar.robots[i].GOAL,"START: ",astar.robots[i].coordinate)
+    # for i in range(len(astar.robots)):
+    #     print(astar.ToCommand(i))
     # print(astar.MAP)
+    # for i in range(4):
+    #     x,y = astar.robots[i].GOAL
+    #     astar.MAP[y][x] = '▦'
+    # for y in range(board_size):
+    #     print(astar.MAP[y])
+    for i in range(4):
+        astar.Search(i)
+        if(astar.robots[i].path is not None):
+            print(astar.ToCommand(i))
+        else:
+            print(i,"길을 못찾앗습니다.")
+
