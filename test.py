@@ -10,7 +10,7 @@ for i in range(4):
     R.append(tuple(map(int,input().split())))
 
 
-SIZE = 200
+SIZE = 400
 RADIUS = 10
 robot = np.array(L)
 target = np.array(R)
