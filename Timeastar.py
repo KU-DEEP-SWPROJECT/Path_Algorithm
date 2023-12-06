@@ -60,8 +60,7 @@ class TimeAstar:
         self.Robot_sort()
         for i in range(len(robots)):
             self.AgentTable[i].append(self.robots[i].coordinate)
-        for y in range(SIZE):
-            print(self.MAP[y])
+
 
 
     def set_goal(self, goal: tuple):
