@@ -43,10 +43,10 @@ class TimeAstar:
         L = [*map(tuple,goal)]
         xsize = max(L)[0] - min(L)[0] + 1
         ysize = max(L,key=lambda x : x[1])[1] - min(L,key= lambda x : x[1])[1]
-        dx = xsize // 4
-        dy = ysize // 4
+        dx = xsize // 8
+        dy = ysize // 8
 
-        ggoal = [(goal[0][0]+dx,goal[0][1]+dy),(goal[1][0]-dx,goal[1][1]+dy),(goal[2][0]-dx,goal[2][0]-2*dy),(goal[3][0]+dx,goal[3][1]-2*dy)]
+        ggoal = [(goal[0][0]+dx,goal[0][1]+2*dy),(goal[1][0]-dx,goal[1][1]+2*dy),(goal[2][0]-dx,goal[2][0]-3*dy),(goal[3][0]+dx,goal[3][1]-3*dy)]
 
         self.init_Goal(ggoal)
         self.set_obstacle([L])
