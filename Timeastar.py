@@ -52,7 +52,7 @@ class TimeAstar:
         dy = ysize // 8
 
         goal = [(x_min, y_max), (x_max, y_max), (x_max,y_min),(x_min,y_min)]
-        ggoal = [(x_min+dx, y_max+2*dy), (x_max-dx, y_max+2*dy), (x_max-dx,y_min+2*dy),(x_min+dx,y_min-2*dy)]
+        ggoal = [(x_min+dx, y_max+2*dy), (x_max-dx, y_max+2*dy), (x_max-dx,y_min-3*dy),(x_min+dx,y_min-3*dy)]
 
         self.init_Goal(ggoal)
         self.set_obstacle([goal])
