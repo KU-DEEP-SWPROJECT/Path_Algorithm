@@ -7,6 +7,18 @@ from typing import Optional
 import copy
 from robot_class import robot as Robot
 import time
+import matplotlib.pyplot as plt
+
+# 주어진 좌표
+coordinates = [
+    (174, 40), (174, 41), (174, 42), (174, 43), (174, 44), (174, 45),
+    # ... 중략 ...
+    (172, 40), (173, 40)
+]
+
+# 좌표를 추출하여 x, y 값으로 나누기
+x_values, y_values = zip(*coordinates)
+
 
 class Node:
     def __init__(self, parent, coordinate: tuple, cost: int, heuristic: int, dir: int):
@@ -46,13 +58,13 @@ class TimeAstar:
         x_min = min(L)[0]
         y_min = min(L, key=lambda x: x[1])[1]
 
-        xsize = x_max - x_min + 1
-        ysize = y_max - y_min + 1
+        xsize = x_max - x_min
+        ysize = y_max - y_min
         dx = xsize // 8
         dy = ysize // 8
 
         self.set_obstacle([L])
-        ggoal = [(x_min+dx, y_max+3*dy), (x_max-dx, y_max+3*dy), (x_max-dx,y_min-7*dy),(x_min+dx,y_min-7*dy)]
+        ggoal = [(x_min+dx, y_max+3*dy), (x_max-dx, y_max+3*dy), (x_max-dx,y_min-3*dy),(x_min+dx,y_min-3*dy)]
         goal = [(L[0][0],ggoal[0][1]-1),(L[1][0],ggoal[1][1]-1),(L[2][0],ggoal[2][1]+1),(L[3][0],ggoal[3][1]-1)]
         self.init_Goal(ggoal)
         self.set_obstacle([goal])
@@ -61,6 +73,41 @@ class TimeAstar:
         for i in range(len(robots)):
             print("GOAL: ",self.robots[i].IDX," -> ",self.robots[i].GOAL)
             self.AgentTable[i].append(self.robots[i].coordinate)
+        for y in range(SIZE):
+            print(self.MAP[y])
+    def show_mat(self):
+        ob = []
+        for y in range(self.SIZE):
+            for x in range(self.SIZE):
+                if self.MAP[y][x] == '□':
+                    ob.append((x,y))
+        robot1,robot2,robot3,robot4 = [],[],[],[]
+        if self.robots[0].path is not None: robot1 = [t for _,t in self.robots[0].path]
+        if self.robots[1].path is not None: robot2 = [t for _,t in self.robots[1].path]
+        if self.robots[2].path is not None: robot3 = [t for _,t in self.robots[2].path]
+        if self.robots[3].path is not None: robot4 = [t for _,t in self.robots[3].path]
+        x =  [x for x,y in ob]
+        y = [y for x,y in ob]
+        plt.scatter(x,y,c='gray',edgecolors='none',s=3)
+        if len(robot1):
+            x = [x for x,y in robot1]
+            y = [y for x,y in robot1]
+            plt.scatter(x,y,c='blue',edgecolors='none',s=3)
+        if len(robot2):
+            x = [x for x, y in robot2]
+            y = [y for x, y in robot2]
+            plt.scatter(x,y,c='purple',edgecolors='none',s=3)
+        if len(robot3):
+            x = [x for x, y in robot3]
+            y = [y for x, y in robot3]
+            plt.scatter(x,y,c='orange',edgecolors='none',s=3)
+        if len(robot4):
+            x = [x for x, y in robot4]
+            y = [y for x, y in robot4]
+            plt.scatter(x,y,c='red',edgecolors='none',s=3)
+        plt.show()
+
+
 
     def set_goal(self, goal: tuple):
         for robot in self.robots:

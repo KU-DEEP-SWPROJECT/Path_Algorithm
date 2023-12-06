@@ -43,4 +43,5 @@ def test_algorithm(
             print(astar.ToCommand(i))
         else:
             print(i,"길을 못찾앗습니다.")
+    astar.show_mat()
 

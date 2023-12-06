@@ -1,18 +1,13 @@
-import test_algorithm
+import test_algorithm as t
 import numpy as np
-from robot_class import robot as Robot
 
 L = []
+for i in range(4):
+    x,y = map(int,input().split())
+    L.append((x,y))
 R = []
 for i in range(4):
-    L.append(tuple(map(int,input().split())))
-for i in range(4):
-    R.append(tuple(map(int,input().split())))
+    x,y = map(int,input().split())
+    R.append((x,y))
 
-
-SIZE = 400
-RADIUS = 10
-robot = np.array(L)
-target = np.array(R)
-test_algorithm.test_algorithm(SIZE,RADIUS,robot,target)
-
+t.test_algorithm(200,15,np.array(L),np.array(R))
