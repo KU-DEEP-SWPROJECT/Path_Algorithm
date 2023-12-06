@@ -6,7 +6,7 @@ from math import *
 from typing import Optional
 import copy
 from robot_class import robot as Robot
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 import time
 
 class Node:
