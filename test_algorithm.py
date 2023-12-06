@@ -32,11 +32,11 @@ def test_algorithm(
     # for i in range(len(astar.robots)):
     #     print(astar.ToCommand(i))
     # print(astar.MAP)
-    # for i in range(4):
-    #     x,y = astar.robots[i].GOAL
-    #     astar.MAP[y][x] = '▦'
-    # for y in range(board_size):
-    #     print(astar.MAP[y])
+    for i in range(4):
+        x,y = astar.robots[i].GOAL
+        astar.MAP[y][x] = '◆'
+    for y in range(board_size):
+        print(astar.MAP[y])
     for i in range(4):
         astar.Search(i)
         if(astar.robots[i].path is not None):
