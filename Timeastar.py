@@ -40,24 +40,22 @@ class TimeAstar:
         self.COST_RATIO = 5
         self.RANGE = Radius * Radius
         self.AgentTable = [[] for _ in range(len(robots))]  # [ [], [], [], [], [] ]
-
-        xsize = abs(goal[0][0] - goal[1][0])
-        ysize = abs(goal[1][1] - goal[2][1])
+        L = [*map(tuple,goal)]
+        xsize = max(L)[0] - min(L)[0] + 1
+        ysize = max(L,key=lambda x : x[1])[1] - min(L,key= lambda x : x[1])[1]
         dx = xsize // 4
         dy = ysize // 4
-        coo = goal[0]
-        coo2 = goal[3]
-        ggoal = [(coo[0]+dx,coo[1]),(coo[0]+dx*3,coo[1]),(coo2[0]+dx,coo2[1]),(coo2[0]+dx*3,coo2[1])]
 
-        self.init_Goal(goal)
-        # self.WaitTable= [[[0 for _ in range(SIZE)] for _ in range(SIZE)] for _ in range(len(robots))]
-        self.set_obstacle([goal])
+        ggoal = [(goal[0][0]+dx,goal[0][1]+dy),(goal[1][0]-dx,goal[1][1]+dy),(goal[2][0]-dx,goal[2][0]-2*dy),(goal[3][0]+dx,goal[3][1]-2*dy)]
+
+        self.init_Goal(ggoal)
+        self.set_obstacle([L])
         self.set_obstacle(obstacles)
         self.Robot_sort()
         for i in range(len(robots)):
             self.AgentTable[i].append(self.robots[i].coordinate)
-
-
+        for y in range(SIZE):
+            print(self.MAP[y])
 
 
     def set_goal(self, goal: tuple):
@@ -108,6 +106,7 @@ class TimeAstar:
             for j in List:
                 RobotArray.append((self.distance(coo,j),i,tuple(j)))
         RobotArray.sort(key= lambda x: x[0])
+
         for dis,x,y in RobotArray:
             if x in a or y in b: continue
             a.add(x)
@@ -234,7 +233,6 @@ class TimeAstar:
 
     def Search(self, idx: int) -> None:  # Robot Path finding
         # Heuristic = Distance  // F = G(현재까지 온 거리) + H(맨하튼 거리)
-
         ROBOT : Robot = self.robots[idx]
         GOAL : tuple = ROBOT.GOAL
         SPEED : int = ROBOT.STRAIGHT * self.COST_RATIO
@@ -277,7 +275,6 @@ class TimeAstar:
                         Heuristic: int = self.distance((x, y), GOAL)
 
                         if Heuristic == 0:  # success path find!
-
                             self.path_tracking(idx, Node(parent=Top,coordinate= (x, y), cost=st, heuristic=Heuristic, dir=dir))
                             Q.clear()
                             break
