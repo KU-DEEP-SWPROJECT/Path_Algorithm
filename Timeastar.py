@@ -185,7 +185,10 @@ class TimeAstar:
         tmp = 12
         command_list = []
         path = self.robots[idx].Direction_path
+        path.append(self.robots[idx].last[0])
         realpath = self.robots[idx].path
+        LAST = realpath[-1]
+        realpath.append((LAST[0],(LAST[1][0],LAST[1][1]+1) if self.robots[idx].last[0] == 0 else (LAST[1][0],LAST[1][1]-1)))
         cnt, stopcnt = 0,0
         cur = path[0] # 첫번째 방향
         cur_path = realpath[0][1] # 첫번째 좌표
@@ -218,7 +221,6 @@ class TimeAstar:
 
         if cnt > 1:
             command_list.append('F' + str((-CONST, CONST)[1 if fleg else 0] * (cnt-1))+','+str((-CONST, CONST)[1 if fleg else 0] * (cnt-1)*tmp))
-        command_list.append(self.robots[idx].last[1])
         return str(self.robots[idx].IDX)+":"+'/'.join(command_list)
     def path_tracking(self, idx: int, T_Node: Node) -> None:
         List = []
