@@ -235,37 +235,7 @@ class TimeAstar:
                 self.AgentTable[idx].append(L[1])
                 j+=1
         # self.draw_path(idx)
-    def show_mat(self):
-        ob = []
-        for y in range(self.SIZE):
-            for x in range(self.SIZE):
-                if self.MAP[y][x] == -1:
-                    ob.append((x,y))
-        robot1,robot2,robot3,robot4 = [],[],[],[]
-        if self.robots[0].path is not None: robot1 = [t for _,t in self.robots[0].path]
-        if self.robots[1].path is not None: robot2 = [t for _,t in self.robots[1].path]
-        if self.robots[2].path is not None: robot3 = [t for _,t in self.robots[2].path]
-        if self.robots[3].path is not None: robot4 = [t for _,t in self.robots[3].path]
-        x =  [x for x,y in ob]
-        y = [y for x,y in ob]
-        plt.scatter(x,y,c='gray',edgecolors='none',s=3)
-        if len(robot1):
-            x = [x for x,y in robot1]
-            y = [y for x,y in robot1]
-            plt.scatter(x,y,c='blue',edgecolors='none',s=3)
-        if len(robot2):
-            x = [x for x, y in robot2]
-            y = [y for x, y in robot2]
-            plt.scatter(x,y,c='purple',edgecolors='none',s=3)
-        if len(robot3):
-            x = [x for x, y in robot3]
-            y = [y for x, y in robot3]
-            plt.scatter(x,y,c='orange',edgecolors='none',s=3)
-        if len(robot4):
-            x = [x for x, y in robot4]
-            y = [y for x, y in robot4]
-            plt.scatter(x,y,c='red',edgecolors='none',s=3)
-        plt.show()
+
     def Search(self, idx: int) -> None:  # Robot Path finding
         # Heuristic = Distance  // F = G(현재까지 온 거리) + H(맨하튼 거리)
 
