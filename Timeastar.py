@@ -1,4 +1,3 @@
-from _ast import keyword
 from collections import deque
 from heapq import heappush as Push
 from heapq import heappop as Pop
@@ -37,34 +36,22 @@ class TimeAstar:
         self.SIZE = SIZE
         self.robots : Robot= robots.copy()
         self.CONST_TRANSFER = 2 / SIZE
-        self.MAP = [['○'] * SIZE for _ in range(SIZE)]
+        self.MAP = [[0] * SIZE for _ in range(SIZE)]
         self.COST_RATIO = 5
         self.RANGE = Radius * Radius
         self.AgentTable = [[] for _ in range(len(robots))]  # [ [], [], [], [], [] ]
 
-        L = [*map(tuple,goal)]
+        xsize = abs(goal[0][0] - goal[1][0])
+        ysize = abs(goal[1][1] - goal[2][1])
+        dx = xsize // 4
+        dy = ysize // 4
+        coo = goal[0]
+        coo2 = goal[3]
+        ggoal = [(coo[0]+dx,coo[1]),(coo[0]+dx*3,coo[1]),(coo2[0]+dx,coo2[1]),(coo2[0]+dx*3,coo2[1])]
 
-        '''
-        max(goal[0][0],
-        
-        '''
-
-
-        min_x = min(L)[0]
-        max_x = max(L)[0]
-        min_y = min(L, key=lambda x: x[1])[1]
-        max_y = max(L, key=lambda x: x[1])[1]
-        ysize = max_y-min_y+1
-        xsize = max_x-min_x+1
-        dx = xsize // 8
-        dy = ysize // 8
-        # print("MAX",max_x,max_y)
-        # print("MIN",min_x,min_y)
-        ggoal = [(min_x+2*dx,max_y+dy),(max_x-dx,max_y+dy),(max_x-dx,min_y-2*dy),(min_x+2*dx,min_y-2*dy)]
-
-        self.init_Goal([(min_x,max_y),(max_x,max_y),(max_x,min_y),(min_x,min_y)])
+        self.init_Goal(goal)
         # self.WaitTable= [[[0 for _ in range(SIZE)] for _ in range(SIZE)] for _ in range(len(robots))]
-        self.set_obstacle([ggoal])
+        self.set_obstacle([goal])
         self.set_obstacle(obstacles)
         self.Robot_sort()
         for i in range(len(robots)):
@@ -100,7 +87,7 @@ class TimeAstar:
         err = dx - dy
 
         while x0 != x1 or y0 != y1:
-            self.MAP[y0][x0] = '◎'
+            self.MAP[y0][x0] = -1
             e2 = 2 * err
             if e2 > -dy:
                 err -= dy
@@ -112,6 +99,7 @@ class TimeAstar:
     def Robot_sort(self):
         self.robots.sort(key=lambda x : self.distance(x.coordinate,x.GOAL))
     def init_Goal(self,List: list) -> None:
+        if not isinstance(List,list): List = List.tolist()
         RobotArray = []
         a = set()
         b = set()
@@ -273,7 +261,7 @@ class TimeAstar:
                         Push(Q,Node(parent=Top, coordinate=Top.COORDINATE, cost=Top.COST + STOP, heuristic=Top.HEURISTIC,dir=Top.DIRECTION))
 
                 else:
-                    if x < 0 or y < 0 or x > self.SIZE - 1 or y > self.SIZE - 1 or self.MAP[y][x] == '◎' or (x, y) in visited: continue
+                    if x < 0 or y < 0 or x > self.SIZE - 1 or y > self.SIZE - 1 or self.MAP[y][x] == -1 or (x, y) in visited: continue
                     st = Top.COST + ROTATE + SPEED
                     if dir ^ Top.DIRECTION in (0, 3): # 같은 방향을 바라보거나 , 뒤로 가는 방향이라면,
                         st -= ROTATE
@@ -300,18 +288,15 @@ if __name__ == "__main__":
     n = 100
     obstacles = []
     robots = [ Robot((33, 12), 0, 1, 2, 1, 'G'), Robot((47, 12), 0, 1, 2, 1, 'R'), Robot((7, 11),0, 1, 2, 1, 'B'), Robot((20, 12), 0, 1, 2, 1, 'P')]
-    astar = TimeAstar( SIZE=n,Radius=8 ,robots=robots, goal= np.array(((10,50),(50,50),(50,10),(10,10))), obstacles=obstacles)
+    astar = TimeAstar( SIZE=n,Radius=7 ,robots=robots, goal= np.array(((13,80),(34,79),(34,59),(13,59))), obstacles=obstacles)
 
 # robots = [ Robot((41, 12), 0, 1, 2, 1, 'G'), Robot((56, 11), 0, 1, 2, 1, 'R'), Robot((26, 12),0, 1, 2, 1, 'B'), Robot((13, 11), 0, 1, 2, 1, 'P')]
 # astar = TimeAstar( SIZE=n,Radius=7 ,robots=robots, goal= [(10,77),(29,76),(29,56),(10,57)], obstacles=obstacles)
 # astar.Robot_sort()
 # print(np.matrix(astar.MAP))
     start=  time.time()
-    for y in range(100):
-        print(astar.MAP[y])
     for i in range(4):
         astar.Search(i)
-        astar.draw_path(i)
         print(astar.ToCommand(i))
 
     print(time.time()-start)
